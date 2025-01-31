@@ -14,6 +14,11 @@
     </head>
     <style>
         #map { height: 60vh; }
+        .leaflet-popup {
+            max-height: 300px;
+            border: 2px solid yellow;
+            overflow: scroll;
+        }
         .placeName { text-transform: capitalize; }
     </style>
     <body>
@@ -21,9 +26,7 @@
             <div id="map"></div>
         </div>
         <script>
-            // get stored geolocation data to save api calls to fetch lat/long coords
             let places = {};
-            let consoleLog = false;
             const map = L.map('map').setView([45, -100], 3);
 
             let count = 0;
@@ -33,56 +36,72 @@
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
-            function placeOnMap(entry, placeName, location) {
-                if (consoleLog) console.log("placing on map ", entry["Member Org Name"]);
+            function placeOnMap(entry, placeName, locationData) {
                 count++;
-                const marker = L.marker([location.latitude, location.longitude]).addTo(map);
+                const marker = L.marker([locationData.latitude, locationData.longitude]).addTo(map);
+                let orgMission = "";
+                if (entry["Organizational mission"]) {
+                    const sentences = entry["Organizational mission"].split(".");
+                    if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "..";
+                    else orgMission = entry["Organizational mission"];
+                }
                 marker.bindPopup(`
                     <b>${entry["Member Org Name"]}</b>
-                    <p>${entry["Organizational mission"] ? entry["Organizational mission"] : ""}</p>
+                    <p class="orgMission">${orgMission}</p>
                     <p>${entry["Region"] ? 'Region: ' + entry["Region"] : ""}</p>
                     <p class="placeName">${placeName}</p>
                     <p>${entry["Website"] ? 'Website: ' + entry["Website"] : ""}</p>
                 `);
             }
 
+            function getOffsetLocation(location) { // offset location by a few points just to scatter markers by no more than 0.8
+                const latitude = location.latitude + (Math.min(Math.random(), 0.8) * ((Math.random() > 0.5) ? 1 : -1));
+                const longitude = location.longitude + (Math.min(Math.random(), 0.8) * ((Math.random() > 0.5) ? 1 : -1));
+                return {latitude, longitude};
+            }
+
+            // get stored geolocation data to save api calls to fetch lat/long coords
             fetch("places.json").then((p) => p.json()).then((d) => {
                 places = d;
                 // get members data from airtable, TODO possibly want to memo-ize this as it doesn't change much
                 fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
+                    // info to pass to popup for map marker
+                    let popupPlaceName = "";
+                    let popupLocationData = places["international"];
+
+                    // go through each entry, and find its lat/long coordinates
+                    // narrowing from country down to city, being as specific with the location as it can be
                     data.forEach((entry) => {
-                        entry = entry["fields"];
+                        if (entry["fields"]) entry = entry["fields"];
                         if (entry["Country"]) {
-                            let country = entry["Country"][0].toLowerCase();
+                            let country = entry["Country"][0].trim().toLowerCase();
                             if (country === "united states") country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
-                            if (entry["City"]) {
-                                const city = entry["City"][0].toLowerCase();
-                                // if place does not already exist in store, fetch geolocation data for place (but it will not save to store)
-                                if (!places[city + "+" + country]) {
-                                    if (consoleLog) console.log("couldn't find " + city + "+" + country);
-                                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${city}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-                                        if (r && r.data) {
-                                            const place = r.data.find((el) => {
-                                                el.name.toLowerCase() === city
-                                                el.country.toLowerCase() === country
-                                            });
-                                            if (place) {
-                                                places[place.name.toLowerCase() + "+" + place.country.toLowerCase()] = {
-                                                    latitude: place.latitude,
-                                                    longitude: place.longitude
-                                                }
-                                                if (consoleLog) console.log("found city: " + city + "+" + country);
-                                                if (consoleLog) console.log({places});
+                            if (!places[country]) { // if country doesn't already exist in store (places.json)
+                                fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${country}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                                    if (r && r.data) {
+                                        const place = r.data.find((el) => el.country.toLowerCase() === country);
+                                        if (place) {
+                                            places[place.country.toLowerCase()] = {
+                                                latitude: place.latitude,
+                                                longitude: place.longitude
                                             }
+                                            popupPlaceName = country;
+                                            popupLocationData = places[place.country.toLowerCase()];
                                         }
-                                    });
-                                } else {
-                                    placeOnMap(entry, `${city}, ${country}`, places[city + "+" + country]);
-                                }
-                            } else if (country === "united states of america" && entry["State"]) { // in the case where there is a state listed, and city can't be found
-                                const state = entry["State"][0].toLowerCase();
-                                if (consoleLog) console.log("couldn't find " + state + "+" + country);
-                                if (!places[state + "+" + country]) {
+                                    }
+                                });
+                            } else if (places[country]) { // if country already exists in store
+                                popupPlaceName = country;
+                                popupLocationData = places[country];
+                            } else { // if country could not be found in store or on geodb
+                                popupPlaceName = country;
+                                popupLocationData = places[country];
+                                console.log("no country found for " + entry["Member Org Name"]);
+                            }
+
+                            if (country === "united states of america" && entry["State"]) { // in the case where there is a state listed
+                                const state = entry["State"][0].trim().toLowerCase();
+                                if (!places[state + "+" + country]) { // if state doesn't already exist in store (places.json)
                                     // need to first get iso code of state
                                     fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${state}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
                                         if (r && r.data) {
@@ -96,36 +115,57 @@
                                                             latitude: region.latitude,
                                                             longitude: region.longitude
                                                         }
-                                                        if (consoleLog) console.log("found state ( " + region + " ): " + state + "+" + country);
-                                                        if (consoleLog) console.log({places});
+                                                        popupPlaceName = `${state}, ${country}`;
+                                                        popupLocationData = places[state + "+" + country];
                                                     }
                                                 });
                                             }
                                         }
                                     });
-                                } else {
-                                    placeOnMap(entry, `${state}, ${country}`, places[state + "+" + country]);
+                                } else if (places[state + "+" + country]) { // if state already exists in store
+                                    popupPlaceName = `${state}, ${country}`;
+                                    popupLocationData = places[state + "+" + country];
+                                } else { // if state could not be found in store or on geodb
+                                    popupPlaceName = `${state}, ${country}`;
+                                    popupLocationData = places[country];
+                                    console.log("no state found for " + entry["Member Org Name"]);
                                 }
-                            } else { // in the case where there is only country and no city listed for the member
-                                if (!places[country]) {
-                                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${country}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                            }
+
+                            if (entry["City"]) { // in the case where there is a city listed
+                                const city = entry["City"][0].trim().toLowerCase();
+                                if (!places[city + "+" + country]) { // if city does not already exist in store
+                                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${city}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
                                         if (r && r.data) {
-                                            const place = r.data.find((el) => el.country.toLowerCase() === country);
+                                            const place = r.data.find((el) =>
+                                              el.name.toLowerCase() === city &&
+                                              el.country.toLowerCase() === country
+                                            );
                                             if (place) {
-                                                places[place.country.toLowerCase()] = {
+                                                places[place.name.toLowerCase() + "+" + place.country.toLowerCase()] = {
                                                     latitude: place.latitude,
                                                     longitude: place.longitude
                                                 }
+                                                popupPlaceName = `${city}, ${country}`;
+                                                popupLocationData = places[place.name.toLowerCase() + "+" + place.country.toLowerCase()];
                                             }
                                         }
                                     });
-                                } else {
-                                    placeOnMap(entry, `${country}`, places[country]);
+                                } else if (places[city + "+" + country]) { // if city already exists in store
+                                    popupPlaceName = `${city}, ${country}`;
+                                    popupLocationData = places[city + "+" + country];
+                                } else { // if city could not be found in store or on geodb
+                                    popupPlaceName = `${city}, ${country}`;
+                                    popupLocationData = places[country];
+                                    console.log("no city found for " + entry["Member Org Name"]);
                                 }
                             }
-                        } else console.log("no country for " + entry["Member Org Name"] + "; couldn't place on map");
+                        } else { // if no country listed
+                            console.log("no country listed for " + entry["Member Org Name"] + "; couldn't place on map");
+                        }
+                        placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
                     });
-                    setTimeout(() => console.log({places}), {count}, 180000); // just in case, if places is updated, as it is not stored in realtime
+                    setTimeout(() => console.log({places}), count, 180000); // just in case, if places is updated, as it is not stored in realtime
                 });
             });
         </script>

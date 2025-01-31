@@ -240,12 +240,12 @@
     "longitude": -118.25
   },
   "belchertown+united states of america": {
-    "latitude": 42.2800,
+    "latitude": 42.28,
     "longitude": -72.4035
   },
   "great barrington+united states of america": {
-    "latitude": 42.1960,
-    "longitude": -73.3620
+    "latitude": 42.196,
+    "longitude": -73.362
   },
   "district of columbia+united states of america": {
     "latitude": 38.9072,
@@ -254,5 +254,113 @@
   "dc+united states of america": {
     "latitude": 38.9072,
     "longitude": -77.0369
+  },
+  "the bronx+united states of america": {
+    "latitude": 40.84676,
+    "longitude": -73.873207
+  },
+  "pennsylvania+united states of america": {
+    "latitude": 40.01,
+    "longitude": -75.13
+  },
+  "texas+united states of america": {
+    "latitude": 29.86,
+    "longitude": -95.39
+  },
+  "illinois+united states of america": {
+    "latitude": 41.8,
+    "longitude": -87.716666666
+  },
+  "oregon+united states of america": {
+    "latitude": 45.54,
+    "longitude": -122.41
+  },
+  "massachusetts+united states of america": {
+    "latitude": 42.459084,
+    "longitude": -71.275566
+  },
+  "north carolina+united states of america": {
+    "latitude": 35.79,
+    "longitude": -78.65
+  },
+  "florida+united states of america": {
+    "latitude": 25.774166666,
+    "longitude": -80.193611111
+  },
+  "colorado+united states of america": {
+    "latitude": 38.84,
+    "longitude": -104.52
+  },
+  "minnesota+united states of america": {
+    "latitude": 44.975833333,
+    "longitude": -93.266666666
+  },
+  "ohio+united states of america": {
+    "latitude": 39.97,
+    "longitude": -83.01
+  },
+  "georgia+united states of america": {
+    "latitude": 33.79,
+    "longitude": -84.47
+  },
+  "mississippi+united states of america": {
+    "latitude": 32.26,
+    "longitude": -90.44
+  },
+  "wisconsin+united states of america": {
+    "latitude": 43,
+    "longitude": -87.96713
+  },
+  "louisiana+united states of america": {
+    "latitude": 30.54,
+    "longitude": -91.09
+  },
+  "new mexico+united states of america": {
+    "latitude": 35.05,
+    "longitude": -106.67
+  },
+  "michigan+united states of america": {
+    "latitude": 42.28,
+    "longitude": -83.26
+  },
+  "missouri+united states of america": {
+    "latitude": 38.64,
+    "longitude": -90.44
+  },
+  "south carolina+united states of america": {
+    "latitude": 34.89,
+    "longitude": -82.37
+  },
+  "new hampshire+united states of america": {
+    "latitude": 42.895584,
+    "longitude": -71.582741
+  },
+  "tennessee+united states of america": {
+    "latitude": 35.18,
+    "longitude": -89.89
+  },
+  "maine+united states of america": {
+    "latitude": 43.784477,
+    "longitude": -70.32798
+  },
+  "kentucky+united states of america": {
+    "latitude": 38.19,
+    "longitude": -85.66
+  },
+  "maryland+united states of america": {
+    "latitude": 39.136388888,
+    "longitude": -77.204166666
+  },
+  "arizona+united states of america": {
+    "latitude": 33.513888888,
+    "longitude": -112.475833333
+  },
+  "vermont+united states of america": {
+    "latitude": 44.475681,
+    "longitude": -73.127274
+  },
+  "alabama+united states of america": {
+    "latitude": 33.52,
+    "longitude": -86.81
   }
 }
