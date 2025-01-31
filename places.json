@@ -235,6 +235,14 @@
     "california+united states of america": {
       "latitude": 34.05,
       "longitude": -118.25
+    },
+    "belchertown+united states of america": {
+      "latitude": 42.2800,
+      "longitude": -72.4035
+    },
+    "great barrington+united states of america": {
+      "latitude": 42.1960,
+      "longitude": -73.3620
     }
   }
 }
