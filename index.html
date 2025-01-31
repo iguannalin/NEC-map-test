@@ -41,7 +41,7 @@
                 let orgMission = "";
                 if (entry["Organizational mission"]) {
                     const sentences = entry["Organizational mission"].split(".");
-                    if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "..";
+                    if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "...";
                     else orgMission = entry["Organizational mission"];
                 }
                 marker.bindPopup(`
@@ -49,13 +49,13 @@
                     <p class="orgMission">${orgMission}</p>
                     <p>${entry["Region"] ? 'Region: ' + entry["Region"] : ""}</p>
                     <p class="placeName">${placeName}</p>
-                    <p>${entry["Website"] ? 'Website: ' + entry["Website"] : ""}</p>
+                    <p>${entry["Website"] ? 'Website: <a href=' + entry["Website"] + '>' + entry["Website"] + '</a>' : ""}</p>
                 `);
             }
 
             function getOffsetLocation(location) { // offset location by a few points just to scatter markers by no more than 0.8
-                const latitude = location.latitude + (Math.min(Math.random(), 0.8) * ((Math.random() > 0.5) ? 1 : -1));
-                const longitude = location.longitude + (Math.min(Math.random(), 0.8) * ((Math.random() > 0.5) ? 1 : -1));
+                const latitude = location.latitude + (Math.min(Math.random() * 0.1, 0.8) * ((Math.random() > 0.5) ? 1 : -1));
+                const longitude = location.longitude + (Math.min(Math.random() * 0.1, 0.8) * ((Math.random() > 0.5) ? 1 : -1));
                 return {latitude, longitude};
             }
 
@@ -163,8 +163,8 @@
                             console.log("no country listed for " + entry["Member Org Name"] + "; couldn't place on map");
                         }
                         placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
+                        setInterval(() => console.log({places}), count, 60000); // just in case, if places is updated, as it is not stored in realtime
                     });
-                    setTimeout(() => console.log({places}), count, 180000); // just in case, if places is updated, as it is not stored in realtime
                 });
             });
         </script>

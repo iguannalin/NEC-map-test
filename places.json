@@ -362,5 +362,9 @@
   "alabama+united states of america": {
     "latitude": 33.52,
     "longitude": -86.81
+  },
+  "alaska+united states of america": {
+    "latitude": 63.5888,
+    "longitude": -154.4931
   }
 }
