@@ -1,4 +1,8 @@
 {
+  "international": {
+    "latitude": 45,
+    "longitude": -50
+  },
   "united states of america": {
     "latitude": 45,
     "longitude": -100
@@ -242,5 +246,13 @@
   "great barrington+united states of america": {
     "latitude": 42.1960,
     "longitude": -73.3620
+  },
+  "district of columbia+united states of america": {
+    "latitude": 38.9072,
+    "longitude": -77.0369
+  },
+  "dc+united states of america": {
+    "latitude": 38.9072,
+    "longitude": -77.0369
   }
 }
