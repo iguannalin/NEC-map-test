@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TBD</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+              crossorigin=""/>
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin=""></script>
+    </head>
+    <style>
+        #map { height: 40vh; }
+    </style>
+    <body>
+        <div id="container">
+            <div id="map"></div>
+        </div>
+        <script>
+            // get stored geolocation data to save api calls to fetch lat/long coords
+            let places = {};
+            fetch("places.json").then((p) => p.json()).then((d) => {
+                places = d;
+                // get members data from airtable, TODO possibly want to memo-ize this as it doesn't change much
+                fetch("scratch.json").then((r) => r.json()).then((data) => {
+                    data.forEach((entry) => {
+                        entry = entry["fields"];
+                        if (entry["Country"]) {
+                            let country = entry["Country"][0].toLowerCase();
+                            if (country === "united states") country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
+                            if (entry["City"]) {
+                                const city = entry["City"][0].toLowerCase();
+                                // if place does not already exist in store, fetch geolocation data for place (but it will not save to store)
+                                if (!places[city + "+" + country]) {
+                                    console.log("couldn't find " + city + "+" + country);
+                                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${city}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                                        if (r && r.data) {
+                                            const place = r.data.find((el) => {
+                                                el.name.toLowerCase() === city
+                                                el.country.toLowerCase() === country
+                                            });
+                                            if (place) {
+                                                places[place.name.toLowerCase() + "+" + place.country.toLowerCase()] = {
+                                                    latitude: place.latitude,
+                                                    longitude: place.longitude
+                                                }
+                                                console.log("found " + city + "+" + country);
+                                                console.log({places});
+                                            }
+                                        }
+                                    });
+                                }
+                            } else if (country === "united states of america" && entry["State"]) { // in the case where there is a state listed, and city can't be found
+                                const state = entry["State"][0].toLowerCase();
+                                console.log("couldn't find " + state + "+" + country);
+                                if (!places[state + "+" + country]) {
+                                    console.log("couldn't find " + state + "+" + country);
+                                    // need to first get iso code of state
+                                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${state}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                                        if (r && r.data) {
+                                            const place = r.data.find((el) => el.name.toLowerCase() === state);
+                                            if (place) {
+                                                // then use iso code to find the largest admin region of that state, and use that as the state geo coords
+                                                fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions/${place.isoCode}/places?types=ADM2&hateoasMode=false&limit=5&offset=0&sort=-population`).then((d) => d.json()).then((r) => {
+                                                    if (r.data) {
+                                                        const region = r.data[0];
+                                                        places[state + "+" + country] = {
+                                                            latitude: region.latitude,
+                                                            longitude: region.longitude
+                                                        }
+                                                        console.log("found ( " + region + " )" + state + "+" + country);
+                                                        console.log({places});
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            } else { // in the case where there is only country and no city listed for the member
+                                if (places[country]) return;
+                                else {
+                                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${country}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                                        if (r && r.data) {
+                                            const place = r.data.find((el) => el.country.toLowerCase() === country);
+                                            if (place) {
+                                                places[place.country.toLowerCase()] = {
+                                                    latitude: place.latitude,
+                                                    longitude: place.longitude
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                    setTimeout(() => console.log({places}), 900000); // just in case, if places is updated, as it is not stored in realtime
+                });
+            });
+
+            const map = L.map('map').setView([45, -100], 3);
+
+            const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+        </script>
+    </body>
+</html>

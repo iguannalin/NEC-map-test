@@ -1,0 +1,240 @@
+{
+  "places": {
+    "united states of america": {
+      "latitude": 45,
+      "longitude": -100
+    },
+    "canada": {
+      "latitude": 60,
+      "longitude": -100
+    },
+    "washington+united states of america": {
+      "latitude": 38.89511,
+      "longitude": -77.03637
+    },
+    "fairbanks north star borough+united states of america": {
+      "latitude": 64.833333333,
+      "longitude": -146.416666666
+    },
+    "fairbanks+united states of america": {
+      "latitude": 64.833333333,
+      "longitude": -146.416666666
+    },
+    "philadelphia+united states of america": {
+      "latitude": 39.952777777,
+      "longitude": -75.163611111
+    },
+    "austin+united states of america": {
+      "latitude": 30.3,
+      "longitude": -97.733333333
+    },
+    "oakland+united states of america": {
+      "latitude": 37.8,
+      "longitude": -122.25
+    },
+    "new york city+united states of america": {
+      "latitude": 40.712777777,
+      "longitude": -74.006111111
+    },
+    "new york+united states of america": {
+      "latitude": 40.712777777,
+      "longitude": -74.006111111
+    },
+    "nyc+united states of america": {
+      "latitude": 40.712777777,
+      "longitude": -74.006111111
+    },
+    "chicago+united states of america": {
+      "latitude": 41.85003,
+      "longitude": -87.65005
+    },
+    "dorchester county+united states of america": {
+      "latitude": 33.08,
+      "longitude": -80.4
+    },
+    "boston+united states of america": {
+      "latitude": 42.360277777,
+      "longitude": -71.057777777
+    },
+    "durham+united states of america": {
+      "latitude": 35.994166666,
+      "longitude": -78.898611111
+    },
+    "victoriaville+canada": {
+      "latitude": 46.05,
+      "longitude": -71.966666666
+    },
+    "miami+united states of america": {
+      "latitude": 25.783333333,
+      "longitude": -80.216666666
+    },
+    "calgary+canada": {
+      "latitude": 51.05011,
+      "longitude": -114.08529
+    },
+    "denver+united states of america": {
+      "latitude": 39.739166666,
+      "longitude": -104.984722222
+    },
+    "brooklyn+united states of america": {
+      "latitude": 40.65083,
+      "longitude": -73.94972
+    },
+    "amherst+united states of america": {
+      "latitude": 42.978333333,
+      "longitude": -78.8
+    },
+    "cleveland+united states of america": {
+      "latitude": 35.1714,
+      "longitude": -84.8711
+    },
+    "dayton+united states of america": {
+      "latitude": 39.766666666,
+      "longitude": -84.2
+    },
+    "richmond+united states of america": {
+      "latitude": 37.540833333,
+      "longitude": -77.436666666
+    },
+    "atlanta+united states of america": {
+      "latitude": 33.756944444,
+      "longitude": -84.390277777
+    },
+    "buffalo+united states of america": {
+      "latitude": 42.886388888,
+      "longitude": -78.878055555
+    },
+    "jackson+united states of america": {
+      "latitude": 32.298888888,
+      "longitude": -90.184722222
+    },
+    "milwaukee+united states of america": {
+      "latitude": 43.05,
+      "longitude": -87.95
+    },
+    "albuquerque+united states of america": {
+      "latitude": 35.116666666,
+      "longitude": -106.616666666
+    },
+    "syracuse+united states of america": {
+      "latitude": 43.046899,
+      "longitude": -76.144423
+    },
+    "east los angeles+united states of america": {
+      "latitude": 34.031388888,
+      "longitude": -118.168611111
+    },
+    "los angeles+united states of america": {
+      "latitude": 34.05223,
+      "longitude": -118.24368
+    },
+    "raleigh+united states of america": {
+      "latitude": 35.78,
+      "longitude": -78.64
+    },
+    "charleston+united states of america": {
+      "latitude": 32.783333333,
+      "longitude": -79.931944444
+    },
+    "portland+united states of america": {
+      "latitude": 43.66,
+      "longitude": -70.255
+    },
+    "detroit+united states of america": {
+      "latitude": 42.331666666,
+      "longitude": -83.0475
+    },
+    "madison+united states of america": {
+      "latitude": 34.715065,
+      "longitude": -86.739644
+    },
+    "bowie+united states of america": {
+      "latitude": 38.942777777,
+      "longitude": -76.730277777
+    },
+    "gloucester county+united states of america": {
+      "latitude": 39.71,
+      "longitude": -75.14
+    },
+    "ashland county+united states of america": {
+      "latitude": 40.84,
+      "longitude": -82.27
+    },
+    "seattle+united states of america": {
+      "latitude": 47.60621,
+      "longitude": -122.33207
+    },
+    "scottsdale+united states of america": {
+      "latitude": 33.493055555,
+      "longitude": -111.926111111
+    },
+    "mountain view+united states of america": {
+      "latitude": 37.392777777,
+      "longitude": -122.041944444
+    },
+    "sacramento+united states of america": {
+      "latitude": 38.575277777,
+      "longitude": -121.486111111
+    },
+    "st. louis+united states of america": {
+      "latitude": 38.62727,
+      "longitude": -90.19789
+    },
+    "duluth+united states of america": {
+      "latitude": 46.786944444,
+      "longitude": -92.098055555
+    },
+    "highland park+united states of america": {
+      "latitude": 34.11194,
+      "longitude": -118.19806
+    },
+    "saint paul+united states of america": {
+      "latitude": 44.944166666,
+      "longitude": -93.093611111
+    },
+    "new rochelle+united states of america": {
+      "latitude": 40.908611111,
+      "longitude": -73.781944444
+    },
+    "decatur+united states of america": {
+      "latitude": 34.580992,
+      "longitude": -86.983392
+    },
+    "northampton county+united states of america": {
+      "latitude": 40.75,
+      "longitude": -75.31
+    },
+    "santa fe+united states of america": {
+      "latitude": 35.666666666,
+      "longitude": -105.966666666
+    },
+    "san francisco+united states of america": {
+      "latitude": 37.7775,
+      "longitude": -122.416388888
+    },
+    "houston+united states of america": {
+      "latitude": 29.762777777,
+      "longitude": -95.383055555
+    },
+    "new orleans+united states of america": {
+      "latitude": 29.976111111,
+      "longitude": -90.078333333
+    },
+    "worcester+united states of america": {
+      "latitude": 42.271388888,
+      "longitude": -71.798888888
+    },
+    "arkansas+united states of america": {
+      "latitude": 34.742222222,
+      "longitude": -92.285833333
+    },
+    "virginia+united states of america": {
+      "latitude": 38.83469,
+      "longitude": -77.27622
+    },
+    "california+united states of america": {
+      "latitude": 34.05,
+      "longitude": -118.25
+    }
+  }
+}
