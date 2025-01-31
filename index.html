@@ -36,7 +36,6 @@
             function placeOnMap(entry, placeName, location) {
                 if (consoleLog) console.log("placing on map ", entry["Member Org Name"]);
                 count++;
-                console.log({count});
                 const marker = L.marker([location.latitude, location.longitude]).addTo(map);
                 marker.bindPopup(`
                     <b>${entry["Member Org Name"]}</b>
@@ -126,7 +125,7 @@
                             }
                         } else console.log("no country for " + entry["Member Org Name"] + "; couldn't place on map");
                     });
-                    setTimeout(() => console.log({places}), 900000); // just in case, if places is updated, as it is not stored in realtime
+                    setTimeout(() => console.log({places}), {count}, 180000); // just in case, if places is updated, as it is not stored in realtime
                 });
             });
         </script>
