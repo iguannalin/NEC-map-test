@@ -41,7 +41,8 @@
                 let orgMission = "";
                 if (entry["Organizational mission"]) {
                     const sentences = entry["Organizational mission"].split(".");
-                    if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "...";
+                    if (sentences[0].length > 250) orgMission = sentences[0] + "...";
+                    else if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "...";
                     else orgMission = entry["Organizational mission"];
                 }
                 marker.bindPopup(`
@@ -166,9 +167,9 @@
                     });
                 });
             });
-            setTimeout(() => {
+            setInterval(() => {
                 console.log({places}, {count});
-            }, 180000); // just in case, if places is updated, as it is not stored in realtime
+            }, 60000); // just in case, if places is updated, as it is not stored in realtime
         </script>
     </body>
 </html>
