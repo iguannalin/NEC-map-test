@@ -22,6 +22,19 @@
         <script>
             // get stored geolocation data to save api calls to fetch lat/long coords
             let places = {};
+            const map = L.map('map').setView([45, -100], 3);
+
+            const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            function placeOnMap(entry, location) {
+                console.log("placing on map ", entry["Member Org Name"])
+                const marker = L.marker([location.latitude, location.longitude]).addTo(map);
+                marker.bindPopup(`<b>${entry["Member Org Name"]}</b><br>${entry["Website"]}`).openPopup();
+            }
+
             fetch("places.json").then((p) => p.json()).then((d) => {
                 places = d;
                 // get members data from airtable, TODO possibly want to memo-ize this as it doesn't change much
@@ -47,17 +60,18 @@
                                                     latitude: place.latitude,
                                                     longitude: place.longitude
                                                 }
-                                                console.log("found " + city + "+" + country);
+                                                console.log("found city: " + city + "+" + country);
                                                 console.log({places});
                                             }
                                         }
                                     });
+                                } else {
+                                    placeOnMap(entry, places[city + "+" + country]);
                                 }
                             } else if (country === "united states of america" && entry["State"]) { // in the case where there is a state listed, and city can't be found
                                 const state = entry["State"][0].toLowerCase();
                                 console.log("couldn't find " + state + "+" + country);
                                 if (!places[state + "+" + country]) {
-                                    console.log("couldn't find " + state + "+" + country);
                                     // need to first get iso code of state
                                     fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${state}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
                                         if (r && r.data) {
@@ -71,17 +85,18 @@
                                                             latitude: region.latitude,
                                                             longitude: region.longitude
                                                         }
-                                                        console.log("found ( " + region + " )" + state + "+" + country);
+                                                        console.log("found state ( " + region + " ): " + state + "+" + country);
                                                         console.log({places});
                                                     }
                                                 });
                                             }
                                         }
                                     });
+                                } else {
+                                    placeOnMap(entry, places[state + "+" + country]);
                                 }
                             } else { // in the case where there is only country and no city listed for the member
-                                if (places[country]) return;
-                                else {
+                                if (!places[country]) {
                                     fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${country}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
                                         if (r && r.data) {
                                             const place = r.data.find((el) => el.country.toLowerCase() === country);
@@ -93,21 +108,15 @@
                                             }
                                         }
                                     });
+                                } else {
+                                    placeOnMap(entry, places[country]);
                                 }
                             }
-                        }
+                        } console.log("no country for " + entry["Member Org Name"] + "; couldn't place on map");
                     });
                     setTimeout(() => console.log({places}), 900000); // just in case, if places is updated, as it is not stored in realtime
                 });
             });
-
-            const map = L.map('map').setView([45, -100], 3);
-
-            const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
-
         </script>
     </body>
 </html>
