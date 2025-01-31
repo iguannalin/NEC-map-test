@@ -53,9 +53,9 @@
                 `);
             }
 
-            function getOffsetLocation(location) { // offset location by a few points just to scatter markers by no more than 0.8
-                const latitude = location.latitude + (Math.min(Math.random() * 0.1, 0.8) * ((Math.random() > 0.5) ? 1 : -1));
-                const longitude = location.longitude + (Math.min(Math.random() * 0.1, 0.8) * ((Math.random() > 0.5) ? 1 : -1));
+            function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
+                const latitude = location.latitude + (Math.random() * 0.01 * ((Math.random() > 0.5) ? 1 : -1));
+                const longitude = location.longitude + (Math.random() * 0.01 * ((Math.random() > 0.5) ? 1 : -1));
                 return {latitude, longitude};
             }
 
@@ -163,10 +163,10 @@
                             console.log("no country listed for " + entry["Member Org Name"] + "; couldn't place on map");
                         }
                         placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
-                        setInterval(() => console.log({places}), count, 60000); // just in case, if places is updated, as it is not stored in realtime
                     });
                 });
             });
+            // setInterval(() => console.log({places}), count, 180000); // just in case, if places is updated, as it is not stored in realtime
         </script>
     </body>
 </html>
