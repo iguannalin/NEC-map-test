@@ -41,7 +41,7 @@
                 let orgMission = "";
                 if (entry["Organizational mission"]) {
                     const sentences = entry["Organizational mission"].split(".");
-                    if (sentences[0].length > 250) orgMission = sentences[0] + "...";
+                    if (sentences[0].length > 200) orgMission = sentences[0] + "...";
                     else if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "...";
                     else orgMission = entry["Organizational mission"];
                 }
@@ -55,8 +55,8 @@
             }
 
             function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
-                const latitude = location.latitude + (Math.random() * 0.01 * ((Math.random() > 0.5) ? 1 : -1));
-                const longitude = location.longitude + (Math.random() * 0.01 * ((Math.random() > 0.5) ? 1 : -1));
+                const latitude = location.latitude + (Math.random() * 0.001 * ((Math.random() > 0.5) ? 1 : -1));
+                const longitude = location.longitude + (Math.random() * 0.001 * ((Math.random() > 0.5) ? 1 : -1));
                 return {latitude, longitude};
             }
 
