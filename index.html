@@ -171,9 +171,7 @@
                 console.log({places}, {count});
             }, 60000); // just in case, if places is updated, as it is not stored in realtime
 
-            // img.leaflet-marker-icon[title^='Z'] {
-            //     filter: hue-rotate(145deg);
-            // }
+            // change color of map markers based on the alphabetical first letter of the marker title (org name)
             const styleEl = document.createElement("style");
             // Append <style> element to <head>
             document.head.appendChild(styleEl);
@@ -181,7 +179,7 @@
             const styleSheet = styleEl.sheet;
             let deg = 0;
             ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'].forEach((letter, index) => {
-                if (index % 2 === 0) deg += 40;
+                if (index % 2 === 0) deg += 40; // hue shift 40 every 3rd letter of the alphabet, to spread letters among CSS hue as evenly as possible
                 styleSheet.insertRule(`img.leaflet-marker-icon[title^=${letter}] { filter: hue-rotate(${deg}deg); } `, 0);
             });
         </script>
