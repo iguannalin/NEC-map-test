@@ -170,6 +170,20 @@
             setTimeout(() => {
                 console.log({places}, {count});
             }, 60000); // just in case, if places is updated, as it is not stored in realtime
+
+            // img.leaflet-marker-icon[title^='Z'] {
+            //     filter: hue-rotate(145deg);
+            // }
+            const styleEl = document.createElement("style");
+            // Append <style> element to <head>
+            document.head.appendChild(styleEl);
+            // Grab style element's sheet
+            const styleSheet = styleEl.sheet;
+            let deg = 0;
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'].forEach((letter, index) => {
+                if (index % 2 === 0) deg += 40;
+                styleSheet.insertRule(`img.leaflet-marker-icon[title^=${letter}] { filter: hue-rotate(${deg}deg); } `, 0);
+            });
         </script>
     </body>
 </html>
