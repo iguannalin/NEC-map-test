@@ -38,13 +38,12 @@
 
             function placeOnMap(entry, placeName, locationData) {
                 count++;
-                const marker = L.marker([locationData.latitude, locationData.longitude]).addTo(map);
+                const marker = L.marker([locationData.latitude, locationData.longitude], {title: entry["Member Org Name"], riseOnHover: true}).addTo(map);
                 let orgMission = "";
                 if (entry["Organizational mission"]) {
-                    const sentences = entry["Organizational mission"].split(".");
-                    if (sentences[0].length > 150) orgMission = sentences[0] + "...";
-                    else if (sentences.length > 2) orgMission = sentences[0] + " " + sentences[1] + "...";
-                    else orgMission = entry["Organizational mission"];
+                    const max = 200;
+                    orgMission = entry["Organizational mission"];
+                    if (orgMission.length > max) orgMission = orgMission.substring(0, max) + "...";
                 }
                 marker.bindPopup(`
                     <b>${entry["Member Org Name"]}</b>
