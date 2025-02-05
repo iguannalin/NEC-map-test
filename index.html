@@ -11,6 +11,9 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
                 integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
                 crossorigin=""></script>
+        <!-- leaflet-search created by Stefano Cudini https://opengeo.tech/stefano-cudini/ -->
+        <script src="dist/leaflet-search.min.js"></script>
+        <link rel="stylesheet" href="dist/leaflet-search.min.css"/>
     </head>
     <style>
         #map { height: 400px; }
@@ -36,6 +39,18 @@
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
+            const markersLayer = new L.LayerGroup();	//layer contain searched elements
+            map.addLayer(markersLayer);
+
+            const controlSearch = new L.Control.Search({
+                position:'topright',
+                layer: markersLayer,
+                initial: false,
+                zoom: 12,
+                marker: false
+            });
+            map.addControl( controlSearch );
+
             function placeOnMap(entry, placeName, locationData) {
                 count++;
                 const marker = L.marker([locationData.latitude, locationData.longitude], {title: entry["Member Org Name"], riseOnHover: true}).addTo(map);
@@ -52,6 +67,7 @@
                     <p class="placeName">${placeName}</p>
                     <p>${entry["Website"] ? 'Website: <a href=' + entry["Website"] + '>' + entry["Website"] + '</a>' : ""}</p>
                 `);
+                markersLayer.addLayer(marker);
             }
 
             function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
