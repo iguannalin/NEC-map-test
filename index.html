@@ -199,6 +199,10 @@
                 if (index % 2 === 0) deg += 40; // hue shift 40 every 3rd letter of the alphabet, to spread letters among CSS hue as evenly as possible
                 styleSheet.insertRule(`img.leaflet-marker-icon[title^=${letter}] { filter: hue-rotate(${deg}deg); } `, 0);
             });
+            const disclaimer = document.createElement("div");
+            disclaimer.className = "leaflet-bottom leaflet-left";
+            disclaimer.innerHTML = "* note: locations on map are approximate";
+            document.querySelector("#map").appendChild(disclaimer);
         </script>
     </body>
 </html>
