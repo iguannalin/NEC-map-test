@@ -23,6 +23,10 @@
             overflow: scroll;
         }
         .placeName { text-transform: capitalize; }
+        .disclaimer {
+            padding: 5px;
+            color: navy;
+        }
     </style>
     <body>
         <div id="container">
@@ -200,9 +204,9 @@
                 styleSheet.insertRule(`img.leaflet-marker-icon[title^=${letter}] { filter: hue-rotate(${deg}deg); } `, 0);
             });
             const disclaimer = document.createElement("div");
-            disclaimer.className = "leaflet-bottom leaflet-left";
-            disclaimer.innerHTML = "* note: locations on map are approximate";
-            document.querySelector("#map").appendChild(disclaimer);
+            disclaimer.className = "leaflet-bottom leaflet-left disclaimer";
+            disclaimer.innerHTML = "*note: locations on map are approximate";
+            document.querySelector("#map")?.appendChild(disclaimer);
         </script>
     </body>
 </html>
