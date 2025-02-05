@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>NEC Members Map</title>
         <meta charset="utf-8">
@@ -46,8 +46,8 @@
                 position:'topright',
                 layer: markersLayer,
                 initial: false,
-                zoom: 12,
-                marker: false
+                zoom: 14,
+                marker: { icon: false, animate: true }
             });
             map.addControl( controlSearch );
 
@@ -80,6 +80,7 @@
             fetch("places.json").then((p) => p.json()).then((d) => {
                 places = d;
                 // get members data from airtable, TODO possibly want to memo-ize this as it doesn't change much
+                // fetch("scratch.json").then((r) => r.json()).then((data) => {
                 fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
                     // info to pass to popup for map marker
                     let popupPlaceName = "";
