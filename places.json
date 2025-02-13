@@ -366,5 +366,29 @@
   "alaska+united states of america": {
     "latitude": 63.5888,
     "longitude": -154.4931
+  },
+  "la mesa+united states of america": {
+    "latitude": 32.771388888,
+    "longitude": -117.022777777
+  },
+  "asheville+united states of america": {
+    "latitude": 35.595555555,
+    "longitude": -82.551944444
+  },
+  "gastonia+united states of america": {
+    "latitude": 35.255277777,
+    "longitude": -81.180277777
+  },
+  "hartford+united states of america": {
+    "latitude": 41.763333333,
+    "longitude": -72.685
+  },
+  "greensboro+united states of america": {
+    "latitude": 36.08,
+    "longitude": -79.819444444
+  },
+  "connecticut+united states of america": {
+    "latitude": 41.81848,
+    "longitude": -72.57216
   }
 }
