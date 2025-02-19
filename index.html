@@ -183,7 +183,7 @@
 // L.DomUtil.addClass(marker._icon, "organization-marker");
 
   function createFilterCheckboxes() {
-    Object.keys(filters).forEach((filter) => {
+    Object.keys(filters).sort().forEach((filter) => {
       const filtersContainer = document.getElementById("filters");
       const container = document.createElement("div");
       container.className = "checkbox-container";
