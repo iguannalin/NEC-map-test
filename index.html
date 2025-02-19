@@ -16,6 +16,9 @@
   <link rel="stylesheet" href="dist/leaflet-search.min.css"/>
 </head>
 <style>
+  #container {
+    font-family: sans-serif;
+  }
   #map { height: 400px; }
   .leaflet-popup {
     max-height: 300px;
@@ -27,13 +30,42 @@
     padding: 5px;
     color: navy;
   }
+  #filters {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-flow: row wrap;
+  }
+  .checkbox-container input {
+    visibility: hidden;
+    position: absolute;
+  }
+  .checkbox-container label {
+    border: 2px solid #27b99e;
+    padding: 2px 8px;
+    margin: 4px;
+    display: flex;
+    text-align: center;
+    text-transform: lowercase;
+    border-radius: 15px;
+    color: black;
+    cursor: pointer;
+  }
+  .checkbox-container label.selected {
+    color: white;
+    background-color: #27b99e;
+  }
+  .checkbox-container label:hover {
+    color: white;
+    background-color: #27b99e;
+  }
 </style>
 <body>
 <div id="container">
   <div id="map"></div>
   <div id="filters"></div>
 </div>
-<script>
+<script> // TODO: ADD select all filters, ADD colors
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
@@ -120,16 +152,17 @@
 
   function createFilterCheckbox(filter, filterClassName) {
     const filtersContainer = document.getElementById("filters");
-    const container = document.createElement("span");
+    const container = document.createElement("div");
     container.className = "checkbox-container";
     const input = document.createElement("input");
     const label = document.createElement("label");
     input.id = `checkbox-${filterClassName}`;
     input.type = "checkbox";
+    input.name = filter;
     label.htmlFor = `checkbox-${filterClassName}`;
     label.innerText = filter;
     input.addEventListener(("change"), (elem) => {
-      applyFilters(document.querySelector(`label[for=${elem.target.id}]`)?.innerText, elem.target.checked);
+      applyFilters(elem.target.name, elem.target.checked);
     });
     container.appendChild(input);
     container.appendChild(label);
