@@ -16,9 +16,6 @@
   <link rel="stylesheet" href="dist/leaflet-search.min.css"/>
 </head>
 <style>
-  #container {
-    font-family: sans-serif;
-  }
   #map { height: 400px; }
   .leaflet-popup {
     max-height: 300px;
@@ -30,6 +27,15 @@
     padding: 5px;
     color: navy;
   }
+  summary {
+     text-transform: uppercase;
+     font-size: 20px;
+     cursor: pointer;
+     margin: 12px 2px 6px;
+     font-style: italic;
+     font-weight: 600;
+     font-family: serif;
+   }
   #filters {
     display: flex;
     justify-content: flex-start;
@@ -40,7 +46,10 @@
     visibility: hidden;
     position: absolute;
   }
-  .checkbox-container label {
+  .checkbox-container label, #button-filter-clearall {
+    font-family: sans-serif;
+    font-size: 14px;
+    background-color: transparent;
     border: 2px solid #27b99e;
     padding: 2px 8px;
     margin: 4px;
@@ -51,21 +60,30 @@
     color: black;
     cursor: pointer;
   }
-  .checkbox-container label.selected {
-    color: white;
-    background-color: #27b99e;
-  }
+  .checkbox-container input[type="checkbox"]:checked + label,
+  #button-filter-clearall:hover,
   .checkbox-container label:hover {
     color: white;
     background-color: #27b99e;
+  }
+  #button-filter-clearall {
+    border: 2px solid black;
+    text-transform: uppercase;
   }
 </style>
 <body>
 <div id="container">
   <div id="map"></div>
-  <div id="filters"></div>
+  <details>
+    <summary>Filters</summary>
+    <div id="filters">
+      <div class="checkbox-container">
+        <button id="button-filter-clearall" onclick="clearAllFilters()">Clear All</button>
+      </div>
+    </div>
+  </details>
 </div>
-<script> // TODO: ADD select all filters, ADD colors
+<script>
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
@@ -113,20 +131,31 @@
     return marker;
   }
 
+  // clear all filters, and show all org markers
+  function clearAllFilters() {
+    appliedFilters = [];
+    document.querySelectorAll("input[type='checkbox']:checked").forEach((elem) => elem.checked = false);
+    Object.keys(orgMarkers).forEach((org) => {
+      orgMarkers[org].isHidden = false;
+      layerGroup.addLayer(orgMarkers[org].marker);
+    });
+  }
+
+  // if filter is applied, hide all markers except for the filtered
   function applyFilters(filter, checked) {
     if (checked) appliedFilters.push(filter);  // add filter to list of applied filters
     else appliedFilters.splice(appliedFilters.findIndex((a) => a === filter), 1); // remove from filter if unchecked
     Object.keys(orgMarkers).forEach((org) => {
-      // return all markers to show by default
-      if (orgMarkers[org].isHidden) {
-        layerGroup.addLayer(orgMarkers[org].marker);
-        orgMarkers[org].isHidden = false;
+      // return all markers to hidden by default
+      if (!orgMarkers[org].isHidden) {
+        layerGroup.removeLayer(orgMarkers[org].marker);
+        orgMarkers[org].isHidden = true;
       }
       appliedFilters.forEach((filter) => {
         // check if org is in filter group
         if (filters[filter].includes(org)) {
-          orgMarkers[org].isHidden = true;
-          layerGroup.removeLayer(orgMarkers[org].marker);
+          orgMarkers[org].isHidden = false;
+          layerGroup.addLayer(orgMarkers[org].marker);
         }
       });
     });
@@ -135,38 +164,40 @@
   function sortOrganizationsByFilters(entry, marker) {
     if (entry["SE models (from 2022 Member Survey 4)"]) {
       entry["SE models (from 2022 Member Survey 4)"].forEach((filter) => {
-        // add filter category to marker CSS classname
-        const filterClassName = "filter-" + filter.replace(/[^\p{L}\p{N}]/giu, ''); // convert category into a CSS-friendly class-name
-        L.DomUtil.addClass(marker._icon, filterClassName);
-        L.DomUtil.addClass(marker._icon, "organization-marker");
-
         if (filters[filter]) { // if filter already exists in list
           filters[filter].push(entry["Member Org Name"]);
         } else { // otherwise create a new entry
           filters[filter] = [entry["Member Org Name"]];
-          createFilterCheckbox(filter, filterClassName);
         }
       });
     }
   }
 
-  function createFilterCheckbox(filter, filterClassName) {
-    const filtersContainer = document.getElementById("filters");
-    const container = document.createElement("div");
-    container.className = "checkbox-container";
-    const input = document.createElement("input");
-    const label = document.createElement("label");
-    input.id = `checkbox-${filterClassName}`;
-    input.type = "checkbox";
-    input.name = filter;
-    label.htmlFor = `checkbox-${filterClassName}`;
-    label.innerText = filter;
-    input.addEventListener(("change"), (elem) => {
-      applyFilters(elem.target.name, elem.target.checked);
+// // add filter category to marker CSS classname
+// const filterClassName = "filter-" + filter.replace(/[^\p{L}\p{N}]/giu, ''); // convert category into a CSS-friendly class-name
+// L.DomUtil.addClass(marker._icon, filterClassName);
+// L.DomUtil.addClass(marker._icon, "organization-marker");
+
+  function createFilterCheckboxes() {
+    Object.keys(filters).forEach((filter) => {
+      const filtersContainer = document.getElementById("filters");
+      const container = document.createElement("div");
+      container.className = "checkbox-container";
+      const input = document.createElement("input");
+      const label = document.createElement("label");
+      const filterClassName = "filter-" + filter.replace(/[^\p{L}\p{N}]/giu, ''); // convert category into a CSS-friendly class-name
+      input.id = `checkbox-${filterClassName}`;
+      input.type = "checkbox";
+      input.name = filter;
+      label.htmlFor = `checkbox-${filterClassName}`;
+      label.innerText = filter;
+      input.addEventListener(("change"), (elem) => {
+        applyFilters(elem.target.name, elem.target.checked);
+      });
+      container.appendChild(input);
+      container.appendChild(label);
+      filtersContainer.appendChild(container);
     });
-    container.appendChild(input);
-    container.appendChild(label);
-    filtersContainer.appendChild(container);
   }
 
   function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
@@ -282,6 +313,7 @@
         const marker = placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
         sortOrganizationsByFilters(entry, marker); // marker can only be styled by category after it is placed on map / rendered
       });
+      createFilterCheckboxes();
     });
   });
   setTimeout(() => {
