@@ -31,19 +31,33 @@
     padding: 5px;
     color: navy;
   }
-  #filter-label {
-    text-transform: uppercase;
-    font-size: 17px;
-    cursor: pointer;
-    font-weight: 700;
-    font-family: 'Titillium Web', Helvetica, Arial, Lucida, sans-serif;
+  #filters-header-container {
     padding: 8px;
     border: 2px solid #1b232d;
-    text-align: center;
     margin: 12px 0 -2px;
     background: #f1dc5b;
     color: #1b232d;
-   }
+    font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: lowercase;
+    min-height: 50px;
+  }
+  #applied-filters {
+    margin: 2px 0;
+  }
+  #optional-showing-filter {
+    position: absolute;
+    right: 16px;
+    top: 437px;
+  }
+  #filter-label {
+    margin: 0 auto;
+    text-transform: uppercase;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Titillium Web', Helvetica, Arial, Lucida, sans-serif;
+  }
   #filters {
     display: flex;
     justify-content: flex-start;
@@ -60,7 +74,7 @@
   }
   .checkbox-container label, #button-filter-clearall {
     font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     background-color: transparent;
     border: 2px solid #27b99e;
     padding: 4px 10px;
@@ -87,7 +101,11 @@
 <body>
 <div id="container">
   <div id="map"></div>
-  <h3 id="filter-label">Filters</h3>
+  <div id="filters-header-container">
+    <h3 id="filter-label">Filters</h3>
+    <p id="applied-filters"></p>
+    <i id="optional-showing-filter"></i>
+  </div>
   <div id="filters">
     <div class="checkbox-container">
       <button id="button-filter-clearall" onclick="clearAllFilters()">Clear All</button>
@@ -101,6 +119,8 @@
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
   let filters = {} ; // { "Mutual Aid" : [ "Upstream Podcast" ], ... }
   let appliedFilters = []; // [ "Mutual Aid", ... ]
+  const showing = document.querySelector("#applied-filters");
+  const optionalShowing = document.querySelector("#optional-showing-filter");
 
   // create map
   const map = L.map('map').setView([45, -100], 3);
@@ -145,6 +165,7 @@
   // clear all filters, and show all org markers
   function clearAllFilters() {
     appliedFilters = [];
+    showing.innerHTML = "";
     document.querySelectorAll("input[type='checkbox']:checked").forEach((elem) => elem.checked = false);
     Object.keys(orgMarkers).forEach((org) => {
       orgMarkers[org].isHidden = false;
@@ -156,6 +177,10 @@
   function applyFilters(filter, checked) {
     if (checked) appliedFilters.push(filter);  // add filter to list of applied filters
     else appliedFilters.splice(appliedFilters.findIndex((a) => a === filter), 1); // remove from filter if unchecked
+
+    if (showing && appliedFilters) showing.innerHTML = "showing: " + appliedFilters.join(", ");
+    else if (showing && !appliedFilters) showing.innerHTML = "";
+
     Object.keys(orgMarkers).forEach((org) => {
       // return all markers to hidden by default
       if (!orgMarkers[org].isHidden) {
@@ -207,12 +232,12 @@
       label.title = filter;
       label.htmlFor = `checkbox-${filterClassName}`;
       label.innerText = shortenString(filter, 20);
-      // label.addEventListener("mouseenter", () => {
-      //   label.innerText = filter;
-      // });
-      // label.addEventListener("mouseleave", () => {
-      //   label.innerText = shortenString(filter, 17);
-      // });
+      label.addEventListener("mouseenter", () => {
+        optionalShowing.innerText += filter;
+      });
+      label.addEventListener("mouseleave", () => {
+        optionalShowing.innerText = "";
+      });
       input.addEventListener(("change"), (elem) => {
         applyFilters(elem.target.name, elem.target.checked);
       });
