@@ -220,8 +220,8 @@
   fetch("places.json").then((p) => p.json()).then((d) => {
     places = d;
     // get members data from airtable
-    fetch("scratch.json").then((r) => r.json()).then((data) => {
-    // fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
+    // fetch("scratch.json").then((r) => r.json()).then((data) => {
+    fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
       // info to pass to popup for map marker
       let popupPlaceName = "";
       let popupLocationData = places["international"];
