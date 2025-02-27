@@ -20,7 +20,10 @@
   body {
     overflow: hidden;
   }
-  #map { height: 400px; }
+  #map {
+    height: 400px;
+    border: 2px solid #1b232d;
+  }
   .leaflet-popup {
     max-height: 300px;
     width: 275px;
@@ -34,7 +37,7 @@
   #filters-header-container {
     padding: 8px;
     border: 2px solid #1b232d;
-    margin: 12px 0 -2px;
+    margin: -2px 0 -2px;
     background: #f1dc5b;
     color: #1b232d;
     font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
@@ -49,7 +52,7 @@
   #optional-showing-filter {
     position: absolute;
     right: 16px;
-    top: 437px;
+    top: 430px;
   }
   #filter-label {
     margin: 0 auto;
@@ -65,7 +68,7 @@
     flex-flow: row wrap;
     overflow: scroll;
     height: 125px;
-    border: 2px solid black;
+    border: 2px solid #1b232d;
     padding: 6px 4px;
   }
   .checkbox-container input {
@@ -76,7 +79,7 @@
     font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
     font-size: 14px;
     background-color: transparent;
-    border: 2px solid #27b99e;
+    border: 2px solid #1b232d;
     padding: 4px 10px;
     margin: 4px;
     display: flex;
@@ -94,7 +97,7 @@
     background-color: #27b99e;
   }
   #button-filter-clearall {
-    border: 2px solid black;
+    border: 2px solid #1b232d;
     text-transform: uppercase;
   }
 </style>
