@@ -68,9 +68,10 @@
     display: flex;
     text-align: center;
     text-transform: lowercase;
-    border-radius: 15px;
+    border-radius: 20px;
     color: #1b232d;
     cursor: pointer;
+    box-sizing: border-box;
   }
   .checkbox-container input[type="checkbox"]:checked + label,
   #button-filter-clearall:hover,
@@ -188,6 +189,10 @@
 // L.DomUtil.addClass(marker._icon, filterClassName);
 // L.DomUtil.addClass(marker._icon, "organization-marker");
 
+  function shortenString(text, maxLength) {
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+  }
+
   function createFilterCheckboxes() {
     Object.keys(filters).sort().forEach((filter) => {
       const filtersContainer = document.getElementById("filters");
@@ -199,8 +204,15 @@
       input.id = `checkbox-${filterClassName}`;
       input.type = "checkbox";
       input.name = filter;
+      label.title = filter;
       label.htmlFor = `checkbox-${filterClassName}`;
-      label.innerText = filter;
+      label.innerText = shortenString(filter, 20);
+      // label.addEventListener("mouseenter", () => {
+      //   label.innerText = filter;
+      // });
+      // label.addEventListener("mouseleave", () => {
+      //   label.innerText = shortenString(filter, 17);
+      // });
       input.addEventListener(("change"), (elem) => {
         applyFilters(elem.target.name, elem.target.checked);
       });
