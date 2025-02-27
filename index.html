@@ -16,6 +16,10 @@
   <link rel="stylesheet" href="dist/leaflet-search.min.css"/>
 </head>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+  body {
+    overflow: hidden;
+  }
   #map { height: 400px; }
   .leaflet-popup {
     max-height: 300px;
@@ -27,14 +31,18 @@
     padding: 5px;
     color: navy;
   }
-  summary {
-     text-transform: uppercase;
-     font-size: 20px;
-     cursor: pointer;
-     margin: 12px 2px 6px;
-     font-style: italic;
-     font-weight: 600;
-     font-family: serif;
+  #filter-label {
+    text-transform: uppercase;
+    font-size: 17px;
+    cursor: pointer;
+    font-weight: 700;
+    font-family: 'Titillium Web', Helvetica, Arial, Lucida, sans-serif;
+    padding: 8px;
+    border: 2px solid #1b232d;
+    text-align: center;
+    margin: 12px 0 -2px;
+    background: #f1dc5b;
+    color: #1b232d;
    }
   #filters {
     display: flex;
@@ -51,17 +59,17 @@
     position: absolute;
   }
   .checkbox-container label, #button-filter-clearall {
-    font-family: sans-serif;
-    font-size: 14px;
+    font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
+    font-size: 16px;
     background-color: transparent;
     border: 2px solid #27b99e;
-    padding: 2px 8px;
+    padding: 4px 10px;
     margin: 4px;
     display: flex;
     text-align: center;
     text-transform: lowercase;
     border-radius: 15px;
-    color: black;
+    color: #1b232d;
     cursor: pointer;
   }
   .checkbox-container input[type="checkbox"]:checked + label,
@@ -78,16 +86,15 @@
 <body>
 <div id="container">
   <div id="map"></div>
-  <details>
-    <summary>Filters</summary>
-    <div id="filters">
-      <div class="checkbox-container">
-        <button id="button-filter-clearall" onclick="clearAllFilters()">Clear All</button>
-      </div>
+  <h3 id="filter-label">Filters</h3>
+  <div id="filters">
+    <div class="checkbox-container">
+      <button id="button-filter-clearall" onclick="clearAllFilters()">Clear All</button>
     </div>
-  </details>
+  </div>
 </div>
 <script>
+  const colors = [ "#e07ee0", "#f76a57", "#fcc949", "#3fc991", "#62b3ef" ];
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
@@ -132,7 +139,6 @@
                 `);
     orgMarkers[entry["Member Org Name"]] = { marker, isHidden: false };
     layerGroup.addLayer(marker);
-    return marker;
   }
 
   // clear all filters, and show all org markers
@@ -165,7 +171,7 @@
     });
   }
 
-  function sortOrganizationsByFilters(entry, marker) {
+  function sortOrganizationsByFilters(entry) {
     if (entry["SE models (from 2022 Member Survey 4)"]) {
       entry["SE models (from 2022 Member Survey 4)"].forEach((filter) => {
         if (filters[filter]) { // if filter already exists in list
@@ -214,8 +220,8 @@
   fetch("places.json").then((p) => p.json()).then((d) => {
     places = d;
     // get members data from airtable
-    // fetch("scratch.json").then((r) => r.json()).then((data) => {
-    fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
+    fetch("scratch.json").then((r) => r.json()).then((data) => {
+    // fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
       // info to pass to popup for map marker
       let popupPlaceName = "";
       let popupLocationData = places["international"];
@@ -314,8 +320,8 @@
         } else { // if no country listed
           console.info("No country listed for " + entry["Member Org Name"] + "; couldn't place on map");
         }
-        const marker = placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
-        sortOrganizationsByFilters(entry, marker); // marker can only be styled by category after it is placed on map / rendered
+        placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
+        sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
       });
       createFilterCheckboxes();
     });
