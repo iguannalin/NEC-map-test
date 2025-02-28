@@ -180,7 +180,7 @@
     let orgMission = "";
     // shorten org mission statement
     if (entry["Organizational mission"]) {
-      const max = 200;
+      const max = 175;
       orgMission = entry["Organizational mission"];
       if (orgMission.length > max) orgMission = orgMission.substring(0, max) + "...";
     }
@@ -209,25 +209,28 @@
   // if filter is applied, hide all markers except for the filtered
   function applyFilters(filter, checked) {
     if (checked) appliedFilters.push(filter);  // add filter to list of applied filters
-    else appliedFilters.splice(appliedFilters.findIndex((a) => a === filter), 1); // remove from filter if unchecked
+    else { // remove from filter if unchecked
+      appliedFilters.splice(appliedFilters.findIndex((a) => a === filter), 1);
+      if (appliedFilters.length === 0) return clearAllFilters();
+    }
 
-    if (showing && appliedFilters) showing.innerHTML = "showing: " + appliedFilters.join(", ");
-    else if (showing && !appliedFilters) showing.innerHTML = "";
-
-    Object.keys(orgMarkers).forEach((org) => {
-      // return all markers to hidden by default
-      if (!orgMarkers[org].isHidden) {
-        layerGroup.removeLayer(orgMarkers[org].marker);
-        orgMarkers[org].isHidden = true;
-      }
-      appliedFilters.forEach((filter) => {
-        // check if org is in filter group
-        if (filters[filter]["organizations"].includes(org)) {
-          orgMarkers[org].isHidden = false;
-          layerGroup.addLayer(orgMarkers[org].marker);
+    if (showing && appliedFilters) {
+      showing.innerHTML = "showing: " + appliedFilters.join(", ");
+      Object.keys(orgMarkers).forEach((org) => {
+        // return all markers to hidden by default
+        if (!orgMarkers[org].isHidden) {
+          layerGroup.removeLayer(orgMarkers[org].marker);
+          orgMarkers[org].isHidden = true;
         }
+        appliedFilters.forEach((filter) => {
+          // check if org is in filter group
+          if (filters[filter]["organizations"].includes(org)) {
+            orgMarkers[org].isHidden = false;
+            layerGroup.addLayer(orgMarkers[org].marker);
+          }
+        });
       });
-    });
+    }
   }
 
   function sortOrganizationsByFilters(entry) {
