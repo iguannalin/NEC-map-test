@@ -106,13 +106,13 @@
     border: 2px solid #1b232d;
     text-transform: uppercase;
   }
-  .marker { fill: #e07ee0; }
-  .marker-icon { fill: #e07ee0; }
-  .filter-color-1 { border-color: #e07ee0 !important; }
-  .filter-color-2 { border-color: #f76a57 !important; }
-  .filter-color-3 { border-color: #fcc949 !important; }
-  .filter-color-4 { border-color: #3fc991 !important; }
-  .filter-color-5 { border-color: #62b3ef !important; }
+
+  .filter-color-0 { border-color: #fffee7 !important; fill: #fffee7;}
+  .filter-color-1 { border-color: #e07ee0 !important; fill: #e07ee0;}
+  .filter-color-2 { border-color: #f76a57 !important; fill: #f76a57;}
+  .filter-color-3 { border-color: #fcc949 !important; fill: #fcc949;}
+  .filter-color-4 { border-color: #3fc991 !important; fill: #3fc991;}
+  .filter-color-5 { border-color: #62b3ef !important; fill: #62b3ef;}
 </style>
 <body>
 <div id="container">
@@ -129,12 +129,11 @@
   </div>
 </div>
 <script>
-  const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   const filterColors = 5; // available unique theme colors
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
-  let filters = {} ; // { "Mutual Aid" : [ "Upstream Podcast" ], ... }
+  let filters = {} ; // { "Mutual Aid" : { organizations: [ "Upstream Podcast" ], colorClass: "filter-color-0" }, ... }
   let appliedFilters = []; // [ "Mutual Aid", ... ]
   const showing = document.querySelector("#applied-filters");
   const optionalShowing = document.querySelector("#optional-showing-filter");
@@ -144,12 +143,12 @@
       <path stroke="#000" d="M15.938 32S6 17.938 6 11.938C6 .125 15.938 0 15.938 0S26 .125 26 11.875C26 18.062 15.938 32 15.938 32zM16 6a4 4 0 100 8 4 4 0 000-8z"/>
     </svg>`;
 
-  const markerIcon = L.divIcon({
+  const markerIcon = (filterColorClass = 'filter-color-0') => L.divIcon({
     html: svgTemplate,
     iconSize: [40, 40],
-    iconAnchor: [12, 24],
-    popupAnchor: [7, -16],
-    className: 'marker-icon'
+    iconAnchor: [20, 35],
+    popupAnchor: [0, -25],
+    className: 'marker-icon ' + filterColorClass
   });
 
   // create map
@@ -171,9 +170,9 @@
   });
   map.addControl( controlSearch );
 
-  function placeOnMap(entry, placeName, locationData) {
+  function placeOnMap(entry, placeName, locationData, markerColorClass) {
     markerCount++;
-    const marker = L.marker([locationData.latitude, locationData.longitude], {title: entry["Member Org Name"], riseOnHover: true, icon: markerIcon}).addTo(map);
+    const marker = L.marker([locationData.latitude, locationData.longitude], {title: entry["Member Org Name"], riseOnHover: true, icon: markerIcon(markerColorClass)}).addTo(map);
     let orgMission = "";
     // shorten org mission statement
     if (entry["Organizational mission"]) {
@@ -219,7 +218,7 @@
       }
       appliedFilters.forEach((filter) => {
         // check if org is in filter group
-        if (filters[filter].includes(org)) {
+        if (filters[filter]["organizations"].includes(org)) {
           orgMarkers[org].isHidden = false;
           layerGroup.addLayer(orgMarkers[org].marker);
         }
@@ -228,15 +227,19 @@
   }
 
   function sortOrganizationsByFilters(entry) {
+    let lastRandomColor = "filter-color-0"
     if (entry["SE models (from 2022 Member Survey 4)"]) {
       entry["SE models (from 2022 Member Survey 4)"].forEach((filter) => {
         if (filters[filter]) { // if filter already exists in list
-          filters[filter].push(entry["Member Org Name"]);
+          filters[filter]["organizations"].push(entry["Member Org Name"]);
+          lastRandomColor = filters[filter]["colorClass"];
         } else { // otherwise create a new entry
-          filters[filter] = [entry["Member Org Name"]];
+          lastRandomColor = "filter-color-" + ((filter.length % filterColors) + 1);
+          filters[filter] = { organizations: [entry["Member Org Name"]], colorClass: lastRandomColor };
         }
       });
     }
+    return lastRandomColor;
   }
 
   function shortenString(text, maxLength) {
@@ -270,10 +273,7 @@
       container.appendChild(label);
       filtersContainer.appendChild(container);
 
-      label.classList.add(`filter-color-${(index % filterColors) + 1}`);
-      // add filter category to marker CSS classname
-      // L.DomUtil.addClass(marker._icon, `filter-color-${alphabet.findIndex((l) => l === filter[0].toUpperCase()) % filterColors + 1}`);
-      // L.DomUtil.addClass(marker._icon, "organization-marker");
+      label.classList.add(filters[filter]["colorClass"]);
     });
   }
 
@@ -387,8 +387,8 @@
         } else { // if no country listed
           console.info("No country listed for " + entry["Member Org Name"] + "; couldn't place on map");
         }
-        placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData));
-        sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
+        const markerColor = sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
+        placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
       });
       createFilterCheckboxes();
     });
@@ -397,17 +397,6 @@
     console.info({places}, {markerCount});
   }, 60000); // just in case, if places is updated, as it is not stored in realtime
 
-  // change color of map markers based on the alphabetical first letter of the marker title (org name)
-  const styleEl = document.createElement("style");
-  // Append <style> element to <head>
-  document.head.appendChild(styleEl);
-  // Grab style element's sheet
-  const styleSheet = styleEl.sheet;
-  let deg = 0;
-  alphabet.forEach((letter, index) => {
-    if (index % 2 === 0) deg += 40; // hue shift 40 every 3rd letter of the alphabet, to spread letters among CSS hue as evenly as possible
-    // styleSheet.insertRule(`img.leaflet-marker-icon[title^=${letter}] { filter: hue-rotate(${deg}deg); } `, 0);
-  });
   const disclaimer = document.createElement("div");
   disclaimer.className = "leaflet-bottom leaflet-left disclaimer";
   disclaimer.innerHTML = "*note: locations on map are approximate";
