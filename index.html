@@ -4,7 +4,8 @@
   <title>NEC Members Map</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
   <!-- Make sure you put this AFTER Leaflet's CSS -->
@@ -16,41 +17,51 @@
   <link rel="stylesheet" href="dist/leaflet-search.min.css"/>
 </head>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
+
   body {
     overflow: hidden;
     width: 100%;
     padding: 0;
     margin: 0 auto;
   }
+
   #map {
     height: 400px;
     border: 2px solid #1b232d;
-    font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
+    font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
   }
+
   .search-tip {
     right: 10%;
     white-space: normal !important;
     inline-size: 122px;
   }
+
   .leaflet-popup {
     max-height: 300px;
     width: 275px;
     overflow: scroll;
   }
+
   .placeName { text-transform: capitalize; }
+
   .disclaimer {
-    font-size: 16px;
+    font-size: 14px;
     padding: 5px;
+    float: right;
+    background: rgba(255, 255, 255, 0.8);
+    margin: 0;
     color: navy;
   }
+
   #filters-header-container {
     padding: 12px 16px;
     border: 2px solid #1b232d;
     margin: -2px 0 -2px;
     background: #f1dc5b;
     color: #1b232d;
-    font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
+    font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
     font-weight: 500;
     font-size: 14px;
     text-transform: lowercase;
@@ -58,9 +69,11 @@
     max-height: 75px;
     overflow-y: scroll;
   }
+
   #applied-filters {
     margin: 2px 0;
   }
+
   #optional-showing-filter {
     position: absolute;
     display: flex;
@@ -77,13 +90,15 @@
     background-color: #f1dc5b;
     padding: 2px;
   }
+
   #filter-label {
     margin: 0 auto;
     text-transform: uppercase;
     font-size: 20px;
     font-weight: 700;
-    font-family: 'Titillium Web', Helvetica, Arial, Lucida, sans-serif;
+    font-family: "Titillium Web", Helvetica, Arial, Lucida, sans-serif;
   }
+
   #filters {
     display: flex;
     justify-content: flex-start;
@@ -94,12 +109,14 @@
     border: 2px solid #1b232d;
     padding: 6px 4px;
   }
+
   .checkbox-container input {
     visibility: hidden;
     position: absolute;
   }
+
   .checkbox-container label, #button-filter-clearall {
-    font-family: 'Poppins',Helvetica,Arial,Lucida,sans-serif;
+    font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
     font-size: 14px;
     background-color: transparent;
     border: 2px solid #27b99e;
@@ -113,22 +130,29 @@
     cursor: pointer;
     box-sizing: border-box;
   }
+
   .checkbox-container input[type="checkbox"]:checked + label,
   #button-filter-clearall:hover,
   .checkbox-container label:hover {
     color: white;
     background-color: #27b99e;
   }
+
   #button-filter-clearall {
     border: 2px solid #1b232d;
     text-transform: uppercase;
   }
 
   .filter-color-0 { border-color: #fffee7 !important; fill: #fffee7;}
+
   .filter-color-1 { border-color: #e07ee0 !important; fill: #e07ee0;}
+
   .filter-color-2 { border-color: #f76a57 !important; fill: #f76a57;}
+
   .filter-color-3 { border-color: #fcc949 !important; fill: #fcc949;}
+
   .filter-color-4 { border-color: #3fc991 !important; fill: #3fc991;}
+
   .filter-color-5 { border-color: #62b3ef !important; fill: #62b3ef;}
 </style>
 <body>
@@ -141,7 +165,9 @@
   </div>
   <div id="filters">
     <div class="checkbox-container">
-      <button id="button-filter-clearall" onclick="clearAllFilters()">Clear All</button>
+      <button id="button-filter-clearall" onclick="clearAllFilters()">Show
+        All
+      </button>
     </div>
   </div>
 </div>
@@ -150,12 +176,12 @@
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
-  let filters = {} ; // { "Mutual Aid" : { organizations: [ "Upstream Podcast" ], colorClass: "filter-color-0" }, ... }
+  let filters = {}; // { "Mutual Aid" : { organizations: [ "Upstream Podcast" ], colorClass: "filter-color-0" }, ... }
   let appliedFilters = []; // [ "Mutual Aid", ... ]
   const showing = document.querySelector("#applied-filters");
   const optionalShowing = document.querySelector("#optional-showing-filter");
   const svgTemplate = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318.44 541.87"><g><path stroke="#002e68" stroke-width="7" d="M77.27,502.32s-6.12-12.74-7.64-44.84c-1.54-32.12,1.02-34.16,3.82-39.24,2.8-5.1,2.17-21.37,2.17-31s3.77-42.87,7.93-64.43c4.16-21.53,19.25-78.01,30.45-103.33,11.2-25.32,19.41-41.25,19.41-41.25,0,0-28.41-4.73-60.69-26.66-32.25-21.89-47.37-35.24-56.56-47.66-9.16-12.43-8.87-13.92-9.47-18.94-.58-5.05,3.56-3.85,4.16-7.72.58-3.85-1.2-8.87-8.29-16.87-7.12-7.98,5.34-13.92,19.83,5.62,14.52,19.54,23.39,34.66,30.21,35.24,6.8.6,14.2.29,23.67,7.12,9.47,6.8,0-19.25-11.25-31.1-11.25-11.82-22.5-21.01-23.7-31.36-1.18-10.36-1.75-20.72,1.78-19.54,3.56,1.18,1.78,5.62,3.85,12.43,2.09,6.8,12.45,23.39,21.32,26.66,8.89,3.24,16.3,15.98,17.19,13.03s-8.29-22.81-10.67-30.21c-2.35-7.4-4.13-24.28-1.78-34.32,2.38-10.07,3.87-13.63,8.61-12.45s2.07,7.12,2.07,17.47-1.49,17.16,2.67,23.1c4.13,5.91,12.43,25.74,16.56,34.03,4.16,8.29,13.34,31.08,15.12,30.5,1.78-.6-.89-31.08-2.67-36.7-1.78-5.65-6.51-8.89-9.47-23.99-2.98-15.09,3.24-10.23,2.96-16.74-.29-6.51-2.38-11.25-3.27-14.2s-.89-5.02-5.02-7.98c-4.16-2.98-2.38-10.39,6.23-3.87,8.58,6.51,7.09,13.03,11.25,14.81,4.13,1.78,3.24,7.12,2.35,11.56-.89,4.42.31,7.98,2.67,5.31,2.38-2.64,4.16-7.69,7.12-9.16,2.96-1.49,6.8,0,3.24,8.58-3.56,8.58-6.51,10.96-6.8,25.16-.29,14.2,1.78,27.23,2.67,30.79s3.43,16.58,5.57,23.39c2.12,6.8,2.41,16.27,7.74,15.7,5.34-.6-1.49-13.92-3.24-35.24-1.78-21.32.58-27.55,3.53-43.82,2.96-16.3,5.05-23.39,5.34-26.66.29-3.24,4.45-15.38,10.07-18.34,5.62-2.98,1.46,6.2,0,11.54-1.49,5.34-7.4,36.7-6.8,40.86.58,4.13,5.31,10.36,4.73,15.09-.6,4.73-5.94,9.18-5.34,15.09.6,5.94.29,11.56,3.56,9.18,3.24-2.35,10.65-11.25,11.54-19.54s-1.18-19.54,3.85-26.63c5.05-7.12,6.83-14.23,6.83-21.32s-.6-15.41,3.53-14.81c4.16.58,1.2,12.14,1.78,15.38.6,3.27-2.35,10.67-2.35,13.34s-2.96,14.78,4.13,5.31c7.12-9.47,13.31-18.94,22.21-25.45,8.87-6.51,3.56,3.27,0,7.4-3.56,4.13-11.04,11.25-14.39,20.72-3.37,9.47-12.27,20.72-14.91,30.5-2.67,9.76-14.52,33.14-9.78,35.52,4.73,2.35,9.47-9.78,14.2-19.54,4.73-9.76,18.36-33.46,24.88-37.9,6.51-4.42,18.05-9.47,23.67-14.2,5.62-4.73,12.14-13.31,14.23-11.25,2.07,2.07-4.16,11.25-9.18,16.3-5.05,5.02-26.37,20.12-23.39,22.5,2.96,2.35,19.23-11.85,28.12-15.98,8.87-4.16,17.16-5.34,17.76-4.16.58,1.18,1.78,4.45-7.4,6.8-9.18,2.38-39.68,27.83-46.2,36.73-6.51,8.87-18.13,23.96-12.01,24.85,6.1.89,21.5-11.54,38.66-15.67,17.16-4.16,24.56-10.67,31.39-16.3,6.8-5.62,17.45-16.27,23.07-14.49,5.62,1.75,8,8.27,0,12.14-7.98,3.85-29.01,18.05-31.68,23.67-2.64,5.62-29.9,18.36-42.61,18.94-12.74.6-15.09,8-8.61,8.29,6.51.29,20.74,2.67,33.17-1.78,12.43-4.42,27.55-16.87,37.01-20.43,9.47-3.53,24.85-3.24,27.23-5.02,2.35-1.78,8.58-5.02,7.98-2.38-.58,2.67-2.07,8-9.76,11.56-7.69,3.56-18.05,6.51-26.34,11.85-8.29,5.31-24.28,12.43-21.61,14.78,2.64,2.38,17.76-1.18,24.56-2.07s18.94-1.78,8.87,1.49c-10.04,3.24-24.56,7.09-23.67,9.47.89,2.35,28.43-.29,34.06-.29s13.31.29,18.34,4.42c5.05,4.16,8.89,11.85,4.16,10.36-4.73-1.46-16.87-10.36-21.61-7.69-4.76,2.67,1.46,7.4-3.87,7.69-5.31.31-16.56-5.02-30.19-5.62-13.63-.58-28.41-.58-40.55,7.12-12.14,7.69-26.05,14.2-37.01,14.52-10.96.29-34.06-3.87-34.06-3.87,0,0-19.23,32.88-26.34,54.2-7.12,21.29-23.1,72.51-24.88,82.87-1.75,10.39-5.91,40.86-7.69,66.34-1.78,25.45-.58,31.65-.58,31.65,0,0,14.49,9.18,23.67,41.17,9.18,31.97,10.65,48.24,9.47,55.64s-2.07,17.47-10.65,24.28c-8.61,6.83-12.45,1.2-19.25-8.58,0,0-11.82-17.42-14.99-27.47Z"/></g></svg>`;
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318.44 541.87"><g><path stroke="#002e68" stroke-width="8" d="M77.27,502.32s-6.12-12.74-7.64-44.84c-1.54-32.12,1.02-34.16,3.82-39.24,2.8-5.1,2.17-21.37,2.17-31s3.77-42.87,7.93-64.43c4.16-21.53,19.25-78.01,30.45-103.33,11.2-25.32,19.41-41.25,19.41-41.25,0,0-28.41-4.73-60.69-26.66-32.25-21.89-47.37-35.24-56.56-47.66-9.16-12.43-8.87-13.92-9.47-18.94-.58-5.05,3.56-3.85,4.16-7.72.58-3.85-1.2-8.87-8.29-16.87-7.12-7.98,5.34-13.92,19.83,5.62,14.52,19.54,23.39,34.66,30.21,35.24,6.8.6,14.2.29,23.67,7.12,9.47,6.8,0-19.25-11.25-31.1-11.25-11.82-22.5-21.01-23.7-31.36-1.18-10.36-1.75-20.72,1.78-19.54,3.56,1.18,1.78,5.62,3.85,12.43,2.09,6.8,12.45,23.39,21.32,26.66,8.89,3.24,16.3,15.98,17.19,13.03s-8.29-22.81-10.67-30.21c-2.35-7.4-4.13-24.28-1.78-34.32,2.38-10.07,3.87-13.63,8.61-12.45s2.07,7.12,2.07,17.47-1.49,17.16,2.67,23.1c4.13,5.91,12.43,25.74,16.56,34.03,4.16,8.29,13.34,31.08,15.12,30.5,1.78-.6-.89-31.08-2.67-36.7-1.78-5.65-6.51-8.89-9.47-23.99-2.98-15.09,3.24-10.23,2.96-16.74-.29-6.51-2.38-11.25-3.27-14.2s-.89-5.02-5.02-7.98c-4.16-2.98-2.38-10.39,6.23-3.87,8.58,6.51,7.09,13.03,11.25,14.81,4.13,1.78,3.24,7.12,2.35,11.56-.89,4.42.31,7.98,2.67,5.31,2.38-2.64,4.16-7.69,7.12-9.16,2.96-1.49,6.8,0,3.24,8.58-3.56,8.58-6.51,10.96-6.8,25.16-.29,14.2,1.78,27.23,2.67,30.79s3.43,16.58,5.57,23.39c2.12,6.8,2.41,16.27,7.74,15.7,5.34-.6-1.49-13.92-3.24-35.24-1.78-21.32.58-27.55,3.53-43.82,2.96-16.3,5.05-23.39,5.34-26.66.29-3.24,4.45-15.38,10.07-18.34,5.62-2.98,1.46,6.2,0,11.54-1.49,5.34-7.4,36.7-6.8,40.86.58,4.13,5.31,10.36,4.73,15.09-.6,4.73-5.94,9.18-5.34,15.09.6,5.94.29,11.56,3.56,9.18,3.24-2.35,10.65-11.25,11.54-19.54s-1.18-19.54,3.85-26.63c5.05-7.12,6.83-14.23,6.83-21.32s-.6-15.41,3.53-14.81c4.16.58,1.2,12.14,1.78,15.38.6,3.27-2.35,10.67-2.35,13.34s-2.96,14.78,4.13,5.31c7.12-9.47,13.31-18.94,22.21-25.45,8.87-6.51,3.56,3.27,0,7.4-3.56,4.13-11.04,11.25-14.39,20.72-3.37,9.47-12.27,20.72-14.91,30.5-2.67,9.76-14.52,33.14-9.78,35.52,4.73,2.35,9.47-9.78,14.2-19.54,4.73-9.76,18.36-33.46,24.88-37.9,6.51-4.42,18.05-9.47,23.67-14.2,5.62-4.73,12.14-13.31,14.23-11.25,2.07,2.07-4.16,11.25-9.18,16.3-5.05,5.02-26.37,20.12-23.39,22.5,2.96,2.35,19.23-11.85,28.12-15.98,8.87-4.16,17.16-5.34,17.76-4.16.58,1.18,1.78,4.45-7.4,6.8-9.18,2.38-39.68,27.83-46.2,36.73-6.51,8.87-18.13,23.96-12.01,24.85,6.1.89,21.5-11.54,38.66-15.67,17.16-4.16,24.56-10.67,31.39-16.3,6.8-5.62,17.45-16.27,23.07-14.49,5.62,1.75,8,8.27,0,12.14-7.98,3.85-29.01,18.05-31.68,23.67-2.64,5.62-29.9,18.36-42.61,18.94-12.74.6-15.09,8-8.61,8.29,6.51.29,20.74,2.67,33.17-1.78,12.43-4.42,27.55-16.87,37.01-20.43,9.47-3.53,24.85-3.24,27.23-5.02,2.35-1.78,8.58-5.02,7.98-2.38-.58,2.67-2.07,8-9.76,11.56-7.69,3.56-18.05,6.51-26.34,11.85-8.29,5.31-24.28,12.43-21.61,14.78,2.64,2.38,17.76-1.18,24.56-2.07s18.94-1.78,8.87,1.49c-10.04,3.24-24.56,7.09-23.67,9.47.89,2.35,28.43-.29,34.06-.29s13.31.29,18.34,4.42c5.05,4.16,8.89,11.85,4.16,10.36-4.73-1.46-16.87-10.36-21.61-7.69-4.76,2.67,1.46,7.4-3.87,7.69-5.31.31-16.56-5.02-30.19-5.62-13.63-.58-28.41-.58-40.55,7.12-12.14,7.69-26.05,14.2-37.01,14.52-10.96.29-34.06-3.87-34.06-3.87,0,0-19.23,32.88-26.34,54.2-7.12,21.29-23.1,72.51-24.88,82.87-1.75,10.39-5.91,40.86-7.69,66.34-1.78,25.45-.58,31.65-.58,31.65,0,0,14.49,9.18,23.67,41.17,9.18,31.97,10.65,48.24,9.47,55.64s-2.07,17.47-10.65,24.28c-8.61,6.83-12.45,1.2-19.25-8.58,0,0-11.82-17.42-14.99-27.47Z"/></g></svg>`;
 
   const markerIcon = (filterColorClass = 'filter-color-0') => L.divIcon({
     html: svgTemplate,
@@ -167,39 +193,44 @@
 
   // create map
   const map = L.map('map').setView([45, -100], 3);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
   }).addTo(map);
 
   // add search bar to map
   const layerGroup = new L.LayerGroup();	//layer contain searched elements
   map.addLayer(layerGroup);
   const controlSearch = new L.Control.Search({
-    position:'topright',
+    position: 'topright',
     layer: layerGroup,
     initial: false,
     zoom: 14,
     marker: { icon: false, animate: true }
   });
-  map.addControl( controlSearch );
+  map.addControl(controlSearch);
 
   function placeOnMap(entry, placeName, locationData, markerColorClass) {
     markerCount++;
-    const marker = L.marker([locationData.latitude, locationData.longitude], {title: entry["Member Org Name"], riseOnHover: true, icon: markerIcon(markerColorClass)}).addTo(map);
+    const marker = L.marker([locationData.latitude, locationData.longitude], {
+      title: entry["Member Org Name"],
+      riseOnHover: true,
+      icon: markerIcon(markerColorClass)
+    }).addTo(map);
     let orgMission = "";
     // shorten org mission statement
-    if (entry["Organizational mission"]) {
+    if ( entry["Organizational mission"] ) {
       const max = 175;
       orgMission = entry["Organizational mission"];
-      if (orgMission.length > max) orgMission = orgMission.substring(0, max) + "...";
+      if ( orgMission.length > max ) orgMission = orgMission.substring(0, max) + "...";
     }
     marker.bindPopup(`
-                    <b>${entry["Member Org Name"]}</b>
-                    <p class="orgMission">${orgMission}</p>
-                    <p>${entry["Region"] ? 'Region: ' + entry["Region"] : ""}</p>
-                    <p class="placeName">${placeName}</p>
-                    <p>${entry["Website"] ? 'Website: <a href=' + entry["Website"] + '>' + entry["Website"] + '</a>' : ""}</p>
+                    <b>${ entry["Member Org Name"] }</b>
+                    <p class="orgMission">${ orgMission }</p>
+                    <p>${ entry["Region"] ? 'Region: ' + entry["Region"] : "" }</p>
+                    <p class="placeName">${ placeName }</p>
+                    <p>${ entry["Website"] ? 'Website: <a href=' + entry["Website"] + '>' + entry["Website"] + '</a>' : "" }</p>
                 `);
     orgMarkers[entry["Member Org Name"]] = { marker, isHidden: false };
     layerGroup.addLayer(marker);
@@ -218,23 +249,23 @@
 
   // if filter is applied, hide all markers except for the filtered
   function applyFilters(filter, checked) {
-    if (checked) appliedFilters.push(filter);  // add filter to list of applied filters
+    if ( checked ) appliedFilters.push(filter);  // add filter to list of applied filters
     else { // remove from filter if unchecked
       appliedFilters.splice(appliedFilters.findIndex((a) => a === filter), 1);
-      if (appliedFilters.length === 0) return clearAllFilters();
+      if ( appliedFilters.length === 0 ) return clearAllFilters();
     }
 
-    if (showing && appliedFilters) {
+    if ( showing && appliedFilters ) {
       showing.innerHTML = "showing: " + appliedFilters.join(", ");
       Object.keys(orgMarkers).forEach((org) => {
         // return all markers to hidden by default
-        if (!orgMarkers[org].isHidden) {
+        if ( !orgMarkers[org].isHidden ) {
           layerGroup.removeLayer(orgMarkers[org].marker);
           orgMarkers[org].isHidden = true;
         }
         appliedFilters.forEach((filter) => {
           // check if org is in filter group
-          if (filters[filter]["organizations"].includes(org)) {
+          if ( filters[filter]["organizations"].includes(org) ) {
             orgMarkers[org].isHidden = false;
             layerGroup.addLayer(orgMarkers[org].marker);
           }
@@ -245,14 +276,17 @@
 
   function sortOrganizationsByFilters(entry) {
     let lastRandomColor = "filter-color-0"
-    if (entry["SE models (from 2022 Member Survey 4)"]) {
+    if ( entry["SE models (from 2022 Member Survey 4)"] ) {
       entry["SE models (from 2022 Member Survey 4)"].forEach((filter) => {
-        if (filters[filter]) { // if filter already exists in list
+        if ( filters[filter] ) { // if filter already exists in list
           filters[filter]["organizations"].push(entry["Member Org Name"]);
           lastRandomColor = filters[filter]["colorClass"];
         } else { // otherwise create a new entry
           lastRandomColor = "filter-color-" + ((filter.length % filterColors) + 1);
-          filters[filter] = { organizations: [entry["Member Org Name"]], colorClass: lastRandomColor };
+          filters[filter] = {
+            organizations: [entry["Member Org Name"]],
+            colorClass: lastRandomColor
+          };
         }
       });
     }
@@ -271,11 +305,11 @@
       const input = document.createElement("input");
       const label = document.createElement("label");
       const filterClassName = "filter-" + filter.replace(/[^\p{L}\p{N}]/giu, ''); // convert category into a CSS-friendly class-name
-      input.id = `checkbox-${filterClassName}`;
+      input.id = `checkbox-${ filterClassName }`;
       input.type = "checkbox";
       input.name = filter;
       label.title = filter;
-      label.htmlFor = `checkbox-${filterClassName}`;
+      label.htmlFor = `checkbox-${ filterClassName }`;
       label.innerText = shortenString(filter, 20);
       label.addEventListener("mouseenter", () => {
         optionalShowing.innerText += filter;
@@ -295,9 +329,9 @@
   }
 
   function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
-    const latitude = location.latitude + (Math.random() * 0.003 * ((Math.random() > 0.5) ? 1 : -1));
-    const longitude = location.longitude + (Math.random() * 0.003 * ((Math.random() > 0.5) ? 1 : -1));
-    return {latitude, longitude};
+    const latitude = location.latitude + (Math.random() * 0.002 * ((Math.random() > 0.5) ? 1 : -1));
+    const longitude = location.longitude + (Math.random() * 0.002 * ((Math.random() > 0.5) ? 1 : -1));
+    return { latitude, longitude };
   }
 
   // get stored geolocation data to save api calls to fetch lat/long coords
@@ -313,15 +347,15 @@
       // go through each entry, and find its lat/long coordinates
       // narrowing from country down to city, being as specific with the location as it can be
       data.forEach((entry) => {
-        if (entry["fields"]) entry = entry["fields"];
-        if (entry["Country"]) {
+        if ( entry["fields"] ) entry = entry["fields"];
+        if ( entry["Country"] ) {
           let country = entry["Country"][0].trim().toLowerCase();
-          if (country === "united states") country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
-          if (!places[country]) { // if country doesn't already exist in store (places.json)
-            fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${country}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-              if (r && r.data) {
+          if ( country === "united states" ) country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
+          if ( !places[country] ) { // if country doesn't already exist in store (places.json)
+            fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${ country }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+              if ( r && r.data ) {
                 const place = r.data.find((el) => el.country.toLowerCase() === country);
-                if (place) {
+                if ( place ) {
                   places[place.country.toLowerCase()] = {
                     latitude: place.latitude,
                     longitude: place.longitude
@@ -331,75 +365,78 @@
                 }
               }
             });
-          } else if (places[country]) { // if country already exists in store
-            popupPlaceName = country;
-            popupLocationData = places[country];
-          } else { // if country could not be found in store or on geodb
-            popupPlaceName = country;
-            popupLocationData = places[country];
-            console.info("No country found for " + entry["Member Org Name"]);
-          }
+          } else
+            if ( places[country] ) { // if country already exists in store
+              popupPlaceName = country;
+              popupLocationData = places[country];
+            } else { // if country could not be found in store or on geodb
+              popupPlaceName = country;
+              popupLocationData = places[country];
+              console.info("No country found for " + entry["Member Org Name"]);
+            }
 
-          if (country === "united states of america" && entry["State"]) { // in the case where there is a state listed
+          if ( country === "united states of america" && entry["State"] ) { // in the case where there is a state listed
             const state = entry["State"][0].trim().toLowerCase();
-            if (!places[state + "+" + country]) { // if state doesn't already exist in store (places.json)
+            if ( !places[state + "+" + country] ) { // if state doesn't already exist in store (places.json)
               // need to first get iso code of state
-              fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${state}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-                if (r && r.data) {
+              fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${ state }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                if ( r && r.data ) {
                   const place = r.data.find((el) => el.name.toLowerCase() === state);
-                  if (place) {
+                  if ( place ) {
                     // then use iso code to find the largest admin region of that state, and use that as the state geo coords
-                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions/${place.isoCode}/places?types=ADM2&hateoasMode=false&limit=5&offset=0&sort=-population`).then((d) => d.json()).then((r) => {
-                      if (r.data) {
+                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions/${ place.isoCode }/places?types=ADM2&hateoasMode=false&limit=5&offset=0&sort=-population`).then((d) => d.json()).then((r) => {
+                      if ( r.data ) {
                         const region = r.data[0];
                         places[state + "+" + country] = {
                           latitude: region.latitude,
                           longitude: region.longitude
                         }
-                        popupPlaceName = `${state}, ${country}`;
+                        popupPlaceName = `${ state }, ${ country }`;
                         popupLocationData = places[state + "+" + country];
                       }
                     });
                   }
                 }
               });
-            } else if (places[state + "+" + country]) { // if state already exists in store
-              popupPlaceName = `${state}, ${country}`;
-              popupLocationData = places[state + "+" + country];
-            } else { // if state could not be found in store or on geodb
-              popupPlaceName = `${state}, ${country}`;
-              popupLocationData = places[country];
-              console.info("No state found for " + entry["Member Org Name"]);
-            }
+            } else
+              if ( places[state + "+" + country] ) { // if state already exists in store
+                popupPlaceName = `${ state }, ${ country }`;
+                popupLocationData = places[state + "+" + country];
+              } else { // if state could not be found in store or on geodb
+                popupPlaceName = `${ state }, ${ country }`;
+                popupLocationData = places[country];
+                console.info("No state found for " + entry["Member Org Name"]);
+              }
           }
 
-          if (entry["City"]) { // in the case where there is a city listed
+          if ( entry["City"] ) { // in the case where there is a city listed
             const city = entry["City"][0].trim().toLowerCase();
-            if (!places[city + "+" + country]) { // if city does not already exist in store
-              fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${city}&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-                if (r && r.data) {
+            if ( !places[city + "+" + country] ) { // if city does not already exist in store
+              fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${ city }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                if ( r && r.data ) {
                   const place = r.data.find((el) =>
                     el.name.toLowerCase() === city &&
                     el.country.toLowerCase() === country
                   );
-                  if (place) {
+                  if ( place ) {
                     places[place.name.toLowerCase() + "+" + place.country.toLowerCase()] = {
                       latitude: place.latitude,
                       longitude: place.longitude
                     }
-                    popupPlaceName = `${city}, ${country}`;
+                    popupPlaceName = `${ city }, ${ country }`;
                     popupLocationData = places[place.name.toLowerCase() + "+" + place.country.toLowerCase()];
                   }
                 }
               });
-            } else if (places[city + "+" + country]) { // if city already exists in store
-              popupPlaceName = `${city}, ${country}`;
-              popupLocationData = places[city + "+" + country];
-            } else { // if city could not be found in store or on geodb
-              popupPlaceName = `${city}, ${country}`;
-              popupLocationData = places[country];
-              console.info("No city found for " + entry["Member Org Name"]);
-            }
+            } else
+              if ( places[city + "+" + country] ) { // if city already exists in store
+                popupPlaceName = `${ city }, ${ country }`;
+                popupLocationData = places[city + "+" + country];
+              } else { // if city could not be found in store or on geodb
+                popupPlaceName = `${ city }, ${ country }`;
+                popupLocationData = places[country];
+                console.info("No city found for " + entry["Member Org Name"]);
+              }
           }
         } else { // if no country listed
           console.info("No country listed for " + entry["Member Org Name"] + "; couldn't place on map");
@@ -411,13 +448,13 @@
     });
   });
   setTimeout(() => {
-    console.info({places}, {markerCount});
+    console.info({ places }, { markerCount });
   }, 60000); // just in case, if places is updated, as it is not stored in realtime
 
   const disclaimer = document.createElement("div");
-  disclaimer.className = "leaflet-bottom leaflet-left disclaimer";
+  disclaimer.className = "disclaimer";
   disclaimer.innerHTML = "*note: locations on map are approximate";
-  document.querySelector("#map")?.appendChild(disclaimer);
+  document.querySelector(".leaflet-bottom.leaflet-right")?.insertBefore(disclaimer, document.querySelector(".leaflet-bottom.leaflet-right div"));
 </script>
 </body>
 </html>
