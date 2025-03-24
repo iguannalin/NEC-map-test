@@ -55,6 +55,17 @@
     color: #089d8f;
   }
 
+  .marker-title {
+    display: flex;
+  }
+
+  .marker-title-logo {
+    max-width: 36px;
+    height: fit-content;
+    padding-right: 2px;
+    margin: 0 auto;
+  }
+
   #filters-header-container {
     padding: 12px 16px;
     border: 2px solid #1b232d;
@@ -225,8 +236,13 @@
       orgMission = entry["Organizational mission"];
       if ( orgMission.length > max ) orgMission = orgMission.substring(0, max) + "...";
     }
+    const markerTitle = () => {
+      let title = `<div class="marker-title">`;
+      if (entry["Logo"] && entry["Logo"].length > 0) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
+      return title + `<b>${ entry["Member Org Name"] }</b></div>`;
+    }
     marker.bindPopup(`
-                    <b>${ entry["Member Org Name"] }</b>
+                    ${ markerTitle() }
                     <p class="orgMission">${ orgMission }</p>
                     <p>${ entry["Region"] ? 'Region: ' + entry["Region"] : "" }</p>
                     <p class="placeName">${ placeName }</p>
