@@ -85,23 +85,6 @@
     margin: 2px 0;
   }
 
-  #optional-showing-filter {
-    position: absolute;
-    display: flex;
-    flex-flow: row wrap;
-    max-width: 52ch;
-    line-height: 14px;
-    top: 418px;
-    font-weight: 400;
-    right: 16px;
-    justify-content: flex-end;
-    align-items: center;
-    word-break: break-word;
-    text-align: right;
-    background-color: #f1dc5b;
-    padding: 2px;
-  }
-
   #filter-label {
     margin: 0 auto;
     text-transform: uppercase;
@@ -133,20 +116,28 @@
     border: 2px solid #27b99e;
     padding: 4px 10px;
     margin: 4px;
-    display: flex;
     text-align: center;
     text-transform: lowercase;
     border-radius: 20px;
     color: #1b232d;
     cursor: pointer;
     box-sizing: border-box;
+    max-width: 20ch;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
   }
 
   .checkbox-container input[type="checkbox"]:checked + label,
   #button-filter-clearall:hover,
   .checkbox-container label:hover {
+    transition: all 0.2s ease-in-out;
     color: white;
     background-color: #27b99e;
+    white-space: wrap;
+    overflow: visible;
+    display: flex;
   }
 
   #button-filter-clearall {
@@ -172,7 +163,6 @@
   <div id="filters-header-container">
     <h3 id="filter-label">Filters</h3>
     <p id="applied-filters"></p>
-    <i id="optional-showing-filter"></i>
   </div>
   <div id="filters">
     <div class="checkbox-container">
@@ -183,15 +173,24 @@
   </div>
 </div>
 <script>
-  const fieldsMap = { "Logo": "fld92iVct2qezn40o", "Member Org Name": "fld9ztr96KifI3jzV", "Region": "fldsqOuSyM37oFLEk", "SE models (from 2022 Member Survey 4)": "fldz37nxMnBGVfZA0", "City": "fld5lGfknBhZcXBOM", "State": "fld6PhCO8GyehA5uJ", "Country": "fldgzJ4QKFToRcIP2", "Location": "fldWUOcEZokNNZdSQ", "Organizational mission": "fldTDjO5EnFvQtuay", "Website": "fldB2uhXcgRy9UiBl" };
+  const fieldsMap = {
+    "Logo": "fld92iVct2qezn40o",
+    "Org Name": "fld9ztr96KifI3jzV",
+    "Region": "fldsqOuSyM37oFLEk",
+    "SE Models": "fldz37nxMnBGVfZA0",
+    "City": "fld5lGfknBhZcXBOM",
+    "State": "fld6PhCO8GyehA5uJ",
+    "Country": "fldgzJ4QKFToRcIP2",
+    "Location": "fldWUOcEZokNNZdSQ",
+    "Org Mission": "fldTDjO5EnFvQtuay",
+    "Website": "fldB2uhXcgRy9UiBl"
+  };
   const filterColors = 5; // available unique theme colors
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
   let filters = {}; // { "Mutual Aid" : { organizations: [ "Upstream Podcast" ], colorClass: "filter-color-0" }, ... }
-  let appliedFilters = []; // [ "Mutual Aid", ... ]
   const showing = document.querySelector("#applied-filters");
-  const optionalShowing = document.querySelector("#optional-showing-filter");
   const svgTemplate = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318.44 541.87"><g><path stroke="#089d8f" stroke-width="5" d="M77.27,502.32s-6.12-12.74-7.64-44.84c-1.54-32.12,1.02-34.16,3.82-39.24,2.8-5.1,2.17-21.37,2.17-31s3.77-42.87,7.93-64.43c4.16-21.53,19.25-78.01,30.45-103.33,11.2-25.32,19.41-41.25,19.41-41.25,0,0-28.41-4.73-60.69-26.66-32.25-21.89-47.37-35.24-56.56-47.66-9.16-12.43-8.87-13.92-9.47-18.94-.58-5.05,3.56-3.85,4.16-7.72.58-3.85-1.2-8.87-8.29-16.87-7.12-7.98,5.34-13.92,19.83,5.62,14.52,19.54,23.39,34.66,30.21,35.24,6.8.6,14.2.29,23.67,7.12,9.47,6.8,0-19.25-11.25-31.1-11.25-11.82-22.5-21.01-23.7-31.36-1.18-10.36-1.75-20.72,1.78-19.54,3.56,1.18,1.78,5.62,3.85,12.43,2.09,6.8,12.45,23.39,21.32,26.66,8.89,3.24,16.3,15.98,17.19,13.03s-8.29-22.81-10.67-30.21c-2.35-7.4-4.13-24.28-1.78-34.32,2.38-10.07,3.87-13.63,8.61-12.45s2.07,7.12,2.07,17.47-1.49,17.16,2.67,23.1c4.13,5.91,12.43,25.74,16.56,34.03,4.16,8.29,13.34,31.08,15.12,30.5,1.78-.6-.89-31.08-2.67-36.7-1.78-5.65-6.51-8.89-9.47-23.99-2.98-15.09,3.24-10.23,2.96-16.74-.29-6.51-2.38-11.25-3.27-14.2s-.89-5.02-5.02-7.98c-4.16-2.98-2.38-10.39,6.23-3.87,8.58,6.51,7.09,13.03,11.25,14.81,4.13,1.78,3.24,7.12,2.35,11.56-.89,4.42.31,7.98,2.67,5.31,2.38-2.64,4.16-7.69,7.12-9.16,2.96-1.49,6.8,0,3.24,8.58-3.56,8.58-6.51,10.96-6.8,25.16-.29,14.2,1.78,27.23,2.67,30.79s3.43,16.58,5.57,23.39c2.12,6.8,2.41,16.27,7.74,15.7,5.34-.6-1.49-13.92-3.24-35.24-1.78-21.32.58-27.55,3.53-43.82,2.96-16.3,5.05-23.39,5.34-26.66.29-3.24,4.45-15.38,10.07-18.34,5.62-2.98,1.46,6.2,0,11.54-1.49,5.34-7.4,36.7-6.8,40.86.58,4.13,5.31,10.36,4.73,15.09-.6,4.73-5.94,9.18-5.34,15.09.6,5.94.29,11.56,3.56,9.18,3.24-2.35,10.65-11.25,11.54-19.54s-1.18-19.54,3.85-26.63c5.05-7.12,6.83-14.23,6.83-21.32s-.6-15.41,3.53-14.81c4.16.58,1.2,12.14,1.78,15.38.6,3.27-2.35,10.67-2.35,13.34s-2.96,14.78,4.13,5.31c7.12-9.47,13.31-18.94,22.21-25.45,8.87-6.51,3.56,3.27,0,7.4-3.56,4.13-11.04,11.25-14.39,20.72-3.37,9.47-12.27,20.72-14.91,30.5-2.67,9.76-14.52,33.14-9.78,35.52,4.73,2.35,9.47-9.78,14.2-19.54,4.73-9.76,18.36-33.46,24.88-37.9,6.51-4.42,18.05-9.47,23.67-14.2,5.62-4.73,12.14-13.31,14.23-11.25,2.07,2.07-4.16,11.25-9.18,16.3-5.05,5.02-26.37,20.12-23.39,22.5,2.96,2.35,19.23-11.85,28.12-15.98,8.87-4.16,17.16-5.34,17.76-4.16.58,1.18,1.78,4.45-7.4,6.8-9.18,2.38-39.68,27.83-46.2,36.73-6.51,8.87-18.13,23.96-12.01,24.85,6.1.89,21.5-11.54,38.66-15.67,17.16-4.16,24.56-10.67,31.39-16.3,6.8-5.62,17.45-16.27,23.07-14.49,5.62,1.75,8,8.27,0,12.14-7.98,3.85-29.01,18.05-31.68,23.67-2.64,5.62-29.9,18.36-42.61,18.94-12.74.6-15.09,8-8.61,8.29,6.51.29,20.74,2.67,33.17-1.78,12.43-4.42,27.55-16.87,37.01-20.43,9.47-3.53,24.85-3.24,27.23-5.02,2.35-1.78,8.58-5.02,7.98-2.38-.58,2.67-2.07,8-9.76,11.56-7.69,3.56-18.05,6.51-26.34,11.85-8.29,5.31-24.28,12.43-21.61,14.78,2.64,2.38,17.76-1.18,24.56-2.07s18.94-1.78,8.87,1.49c-10.04,3.24-24.56,7.09-23.67,9.47.89,2.35,28.43-.29,34.06-.29s13.31.29,18.34,4.42c5.05,4.16,8.89,11.85,4.16,10.36-4.73-1.46-16.87-10.36-21.61-7.69-4.76,2.67,1.46,7.4-3.87,7.69-5.31.31-16.56-5.02-30.19-5.62-13.63-.58-28.41-.58-40.55,7.12-12.14,7.69-26.05,14.2-37.01,14.52-10.96.29-34.06-3.87-34.06-3.87,0,0-19.23,32.88-26.34,54.2-7.12,21.29-23.1,72.51-24.88,82.87-1.75,10.39-5.91,40.86-7.69,66.34-1.78,25.45-.58,31.65-.58,31.65,0,0,14.49,9.18,23.67,41.17,9.18,31.97,10.65,48.24,9.47,55.64s-2.07,17.47-10.65,24.28c-8.61,6.83-12.45,1.2-19.25-8.58,0,0-11.82-17.42-14.99-27.47Z"/></g></svg>`;
 
@@ -226,21 +225,21 @@
   function placeOnMap(entry, placeName, locationData, markerColorClass) {
     markerCount++;
     const marker = L.marker([locationData.latitude, locationData.longitude], {
-      title: entry[fieldsMap["Member Org Name"]],
+      title: entry[fieldsMap["Org Name"]],
       riseOnHover: true,
       icon: markerIcon(markerColorClass)
     }).addTo(map);
     let orgMission = "";
     // shorten org mission statement
-    if ( entry[fieldsMap["Organizational mission"]] ) {
+    if ( entry[fieldsMap["Org Mission"]] ) {
       const max = 175;
-      orgMission = entry[fieldsMap["Organizational mission"]];
+      orgMission = entry[fieldsMap["Org Mission"]];
       if ( orgMission.length > max ) orgMission = orgMission.substring(0, max) + "...";
     }
     const markerTitle = () => {
       let title = `<div class="marker-title">`;
-      if (entry[fieldsMap["Logo"]] && entry[fieldsMap["Logo"]].length > 0) title += `<img class="marker-title-logo" src="${ entry[fieldsMap["Logo"]][0]["thumbnails"]["small"].url }"/> `;
-      return title + `<b>${ entry[fieldsMap["Member Org Name"]] }</b></div>`;
+      if ( entry[fieldsMap["Logo"]] && entry[fieldsMap["Logo"]].length > 0 ) title += `<img class="marker-title-logo" src="${ entry[fieldsMap["Logo"]][0]["thumbnails"]["small"].url }"/> `;
+      return title + `<b>${ entry[fieldsMap["Org Name"]] }</b></div>`;
     }
     marker.bindPopup(`
                     ${ markerTitle() }
@@ -249,13 +248,12 @@
                     <p class="placeName">${ placeName }</p>
                     <p>${ entry[fieldsMap["Website"]] ? 'Website: <a href=' + entry[fieldsMap["Website"]] + '>' + entry[fieldsMap["Website"]] + '</a>' : "" }</p>
                 `);
-    orgMarkers[entry["Member Org Name"]] = { marker, isHidden: false };
+    orgMarkers[entry[fieldsMap["Org Name"]]] = { marker, isHidden: false };
     layerGroup.addLayer(marker);
   }
 
   // clear all filters, and show all org markers
   function clearAllFilters() {
-    appliedFilters = [];
     showing.innerHTML = "";
     document.querySelectorAll("input[type='checkbox']:checked").forEach((elem) => elem.checked = false);
     Object.keys(orgMarkers).forEach((org) => {
@@ -266,21 +264,16 @@
 
   // if filter is applied, hide all markers except for the filtered
   function applyFilters(filter, checked) {
-    if ( checked ) appliedFilters.push(filter);  // add filter to list of applied filters
-    else { // remove from filter if unchecked
-      appliedFilters.splice(appliedFilters.findIndex((a) => a === filter), 1);
-      if ( appliedFilters.length === 0 ) return clearAllFilters();
-    }
-
-    if ( showing && appliedFilters ) {
-      showing.innerHTML = "showing: " + appliedFilters.join(", ");
+    const filtersChecked = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).filter((elem) => elem.checked).map((e) => e.name);
+    if (filtersChecked ) {
+      showing.innerHTML = "showing: " + filtersChecked.join(" & ");
       Object.keys(orgMarkers).forEach((org) => {
         // return all markers to hidden by default
         if ( !orgMarkers[org].isHidden ) {
           layerGroup.removeLayer(orgMarkers[org].marker);
           orgMarkers[org].isHidden = true;
         }
-        appliedFilters.forEach((filter) => {
+        filtersChecked.forEach((filter) => {
           // check if org is in filter group
           if ( filters[filter]["organizations"].includes(org) ) {
             orgMarkers[org].isHidden = false;
@@ -293,10 +286,10 @@
 
   function sortOrganizationsByFilters(entry) {
     let lastRandomColor = "filter-color-0"
-    if ( entry[fieldsMap["SE models (from 2022 Member Survey 4)"]] ) {
-      entry[fieldsMap["SE models (from 2022 Member Survey 4)"]].forEach((filter) => {
+    if ( entry[fieldsMap["SE Models"]] ) {
+      entry[fieldsMap["SE Models"]].forEach((filter) => {
         if ( filters[filter] ) { // if filter already exists in list
-          filters[filter]["organizations"].push(entry[fieldsMap["Member Org Name"]]);
+          filters[filter]["organizations"].push(entry[fieldsMap["Org Name"]]);
           lastRandomColor = filters[filter]["colorClass"];
         } else { // otherwise create a new entry
           lastRandomColor = "filter-color-" + ((filter.length % filterColors) + 1);
@@ -310,13 +303,9 @@
     return lastRandomColor;
   }
 
-  function shortenString(text, maxLength) {
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-  }
-
   function createFilterCheckboxes() {
-    Object.keys(filters).sort().forEach((filter, index) => {
-      const filtersContainer = document.getElementById("filters");
+    const filtersContainer = document.getElementById("filters");
+    Object.keys(filters).sort().forEach((filter) => {
       const container = document.createElement("div");
       container.className = "checkbox-container";
       const input = document.createElement("input");
@@ -327,20 +316,13 @@
       input.name = filter;
       label.title = filter;
       label.htmlFor = `checkbox-${ filterClassName }`;
-      label.innerText = shortenString(filter, 20);
-      label.addEventListener("mouseenter", () => {
-        optionalShowing.innerText += filter;
-      });
-      label.addEventListener("mouseleave", () => {
-        optionalShowing.innerText = "";
-      });
+      label.innerText = filter;
       input.addEventListener(("change"), (elem) => {
         applyFilters(elem.target.name, elem.target.checked);
       });
       container.appendChild(input);
       container.appendChild(label);
       filtersContainer.appendChild(container);
-
       label.classList.add(filters[filter]["colorClass"]);
     });
   }
@@ -352,118 +334,135 @@
   }
 
   // get stored geolocation data to save api calls to fetch lat/long coords
-  fetch("places.json").then((p) => p.json()).then((d) => {
-    places = d;
-    // get members data from airtable
-    // fetch("scratch.json").then((r) => r.json()).then((data) => {
-    fetch("https://nec-airtable.netlify.app/.netlify/functions/api").then((r) => r.json()).then((data) => {
-      // info to pass to popup for map marker
-      let popupPlaceName = "";
-      let popupLocationData = places["international"];
+  async function fetchPlaces() {
+    const response = await fetch("places.json")
+    return await response.json();
+  }
 
-      // go through each entry, and find its lat/long coordinates
-      // narrowing from country down to city, being as specific with the location as it can be
-      data.forEach((entry) => {
-        if ( entry[fieldsMap["fields"]] ) entry = entry[fieldsMap["fields"]];
-        if ( entry[fieldsMap["Country"]] ) {
-          let country = entry[fieldsMap["Country"]][0].trim().toLowerCase();
-          if ( country === "united states" ) country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
-          if ( !places[country] ) { // if country doesn't already exist in store (places.json)
-            fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${ country }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-              if ( r && r.data ) {
-                const place = r.data.find((el) => el.country.toLowerCase() === country);
-                if ( place ) {
-                  places[place.country.toLowerCase()] = {
-                    latitude: place.latitude,
-                    longitude: place.longitude
-                  }
-                  popupPlaceName = country;
-                  popupLocationData = places[place.country.toLowerCase()];
-                }
-              }
-            });
-          } else
-            if ( places[country] ) { // if country already exists in store
-              popupPlaceName = country;
-              popupLocationData = places[country];
-            } else { // if country could not be found in store or on geodb
-              popupPlaceName = country;
-              popupLocationData = places[country];
-              console.info("No country found for " + entry[fieldsMap["Member Org Name"]]);
-            }
+  // get members data from airtable
+  async function fetchMemberData() {
+    // const response = await fetch("http://localhost:8888/api");
+    // const response = fetch("scratch.json");
+    const response = fetch("https://nec-airtable.netlify.app/.netlify/functions/api");
+    return await response.json();
+  }
 
-          if ( country === "united states of america" && entry[fieldsMap["State"]] ) { // in the case where there is a state listed
-            const state = entry[fieldsMap["State"]][0].trim().toLowerCase();
-            if ( !places[state + "+" + country] ) { // if state doesn't already exist in store (places.json)
-              // need to first get iso code of state
-              fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${ state }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-                if ( r && r.data ) {
-                  const place = r.data.find((el) => el.name.toLowerCase() === state);
-                  if ( place ) {
-                    // then use iso code to find the largest admin region of that state, and use that as the state geo coords
-                    fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions/${ place.isoCode }/places?types=ADM2&hateoasMode=false&limit=5&offset=0&sort=-population`).then((d) => d.json()).then((r) => {
-                      if ( r.data ) {
-                        const region = r.data[0];
-                        places[state + "+" + country] = {
-                          latitude: region.latitude,
-                          longitude: region.longitude
-                        }
-                        popupPlaceName = `${ state }, ${ country }`;
-                        popupLocationData = places[state + "+" + country];
+  function populateMap() {
+    fetchPlaces().then((locationData) => {
+      places = locationData;
+      fetchMemberData().then((data) => {
+        // info to pass to popup for map marker
+        let popupPlaceName = "";
+        let popupLocationData = places["international"];
+
+        // go through each entry, and find its lat/long coordinates
+        // narrowing from country down to city, being as specific with the location as it can be
+        data.forEach((d) => {
+          if ( d["fields"] ) {
+            let entry = d["fields"];
+            if ( entry[fieldsMap["Country"]] ) {
+              let country = entry[fieldsMap["Country"]][0].trim().toLowerCase();
+              if ( country === "united states" ) country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
+              if ( !places[country] ) { // if country doesn't already exist in store (places.json)
+                fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${ country }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                  if ( r && r.data ) {
+                    const place = r.data.find((el) => el.country.toLowerCase() === country);
+                    if ( place ) {
+                      places[place.country.toLowerCase()] = {
+                        latitude: place.latitude,
+                        longitude: place.longitude
                       }
-                    });
-                  }
-                }
-              });
-            } else
-              if ( places[state + "+" + country] ) { // if state already exists in store
-                popupPlaceName = `${ state }, ${ country }`;
-                popupLocationData = places[state + "+" + country];
-              } else { // if state could not be found in store or on geodb
-                popupPlaceName = `${ state }, ${ country }`;
-                popupLocationData = places[country];
-                console.info("No state found for " + entry[fieldsMap["Member Org Name"]]);
-              }
-          }
-
-          if ( entry[fieldsMap["City"]] ) { // in the case where there is a city listed
-            const city = entry[fieldsMap["City"]][0].trim().toLowerCase();
-            if ( !places[city + "+" + country] ) { // if city does not already exist in store
-              fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${ city }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
-                if ( r && r.data ) {
-                  const place = r.data.find((el) =>
-                    el.name.toLowerCase() === city &&
-                    el.country.toLowerCase() === country
-                  );
-                  if ( place ) {
-                    places[place.name.toLowerCase() + "+" + place.country.toLowerCase()] = {
-                      latitude: place.latitude,
-                      longitude: place.longitude
+                      popupPlaceName = country;
+                      popupLocationData = places[place.country.toLowerCase()];
                     }
-                    popupPlaceName = `${ city }, ${ country }`;
-                    popupLocationData = places[place.name.toLowerCase() + "+" + place.country.toLowerCase()];
                   }
+                });
+              } else
+                if ( places[country] ) { // if country already exists in store
+                  popupPlaceName = country;
+                  popupLocationData = places[country];
+                } else { // if country could not be found in store or on geodb
+                  popupPlaceName = country;
+                  popupLocationData = places[country];
+                  console.info("No country found for " + entry[fieldsMap["Member Org Name"]]);
                 }
-              });
-            } else
-              if ( places[city + "+" + country] ) { // if city already exists in store
-                popupPlaceName = `${ city }, ${ country }`;
-                popupLocationData = places[city + "+" + country];
-              } else { // if city could not be found in store or on geodb
-                popupPlaceName = `${ city }, ${ country }`;
-                popupLocationData = places[country];
-                console.info("No city found for " + entry[fieldsMap["Member Org Name"]]);
+
+              if ( country === "united states of america" && entry[fieldsMap["State"]] ) { // in the case where there is a state listed
+                const state = entry[fieldsMap["State"]][0].trim().toLowerCase();
+                if ( !places[state + "+" + country] ) { // if state doesn't already exist in store (places.json)
+                  // need to first get iso code of state
+                  fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${ state }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                    if ( r && r.data ) {
+                      const place = r.data.find((el) => el.name.toLowerCase() === state);
+                      if ( place ) {
+                        // then use iso code to find the largest admin region of that state, and use that as the state geo coords
+                        fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions/${ place.isoCode }/places?types=ADM2&hateoasMode=false&limit=5&offset=0&sort=-population`).then((d) => d.json()).then((r) => {
+                          if ( r.data ) {
+                            const region = r.data[0];
+                            places[state + "+" + country] = {
+                              latitude: region.latitude,
+                              longitude: region.longitude
+                            }
+                            popupPlaceName = `${ state }, ${ country }`;
+                            popupLocationData = places[state + "+" + country];
+                          }
+                        });
+                      }
+                    }
+                  });
+                } else
+                  if ( places[state + "+" + country] ) { // if state already exists in store
+                    popupPlaceName = `${ state }, ${ country }`;
+                    popupLocationData = places[state + "+" + country];
+                  } else { // if state could not be found in store or on geodb
+                    popupPlaceName = `${ state }, ${ country }`;
+                    popupLocationData = places[country];
+                    console.info("No state found for " + entry[fieldsMap["Member Org Name"]]);
+                  }
               }
+
+              if ( entry[fieldsMap["City"]] ) { // in the case where there is a city listed
+                const city = entry[fieldsMap["City"]][0].trim().toLowerCase();
+                if ( !places[city + "+" + country] ) { // if city does not already exist in store
+                  fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${ city }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
+                    if ( r && r.data ) {
+                      const place = r.data.find((el) =>
+                        el.name.toLowerCase() === city &&
+                        el.country.toLowerCase() === country
+                      );
+                      if ( place ) {
+                        places[place.name.toLowerCase() + "+" + place.country.toLowerCase()] = {
+                          latitude: place.latitude,
+                          longitude: place.longitude
+                        }
+                        popupPlaceName = `${ city }, ${ country }`;
+                        popupLocationData = places[place.name.toLowerCase() + "+" + place.country.toLowerCase()];
+                      }
+                    }
+                  });
+                } else
+                  if ( places[city + "+" + country] ) { // if city already exists in store
+                    popupPlaceName = `${ city }, ${ country }`;
+                    popupLocationData = places[city + "+" + country];
+                  } else { // if city could not be found in store or on geodb
+                    popupPlaceName = `${ city }, ${ country }`;
+                    popupLocationData = places[country];
+                    console.info("No city found for " + entry[fieldsMap["Member Org Name"]]);
+                  }
+              }
+            } else { // if no country listed
+              console.info("No country listed for " + entry[fieldsMap["Member Org Name"]] + "; couldn't place on map");
+            }
+            const markerColor = sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
+            placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
           }
-        } else { // if no country listed
-          console.info("No country listed for " + entry[fieldsMap["Member Org Name"]] + "; couldn't place on map");
-        }
-        const markerColor = sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
-        placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
+        });
+        createFilterCheckboxes();
       });
-      createFilterCheckboxes();
     });
-  });
+  }
+
+  populateMap();
   setTimeout(() => {
     console.info({ places }, { markerCount });
   }, 60000); // just in case, if places is updated, as it is not stored in realtime
