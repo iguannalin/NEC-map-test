@@ -258,7 +258,7 @@
   // if filter is applied, hide all markers except for the filtered
   function applyFilters() {
     const filtersChecked = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).filter((elem) => elem.checked).map((e) => e.name);
-    if ( filtersChecked ) {
+    if ( filtersChecked.length > 0 ) {
       showing.innerHTML = filtersChecked.join(" & ");
       Object.keys(orgMarkers).forEach((org) => {
         // return all markers to hidden by default
@@ -274,7 +274,7 @@
           }
         });
       });
-    }
+    } else clearAllFilters();
   }
 
   function sortOrganizationsByFilters(entry) {
