@@ -98,7 +98,7 @@
     place-content: flex-start;
     flex-flow: row wrap;
     overflow: scroll;
-    height: 200px;
+    height: 180px;
     border: 2px solid #1b232d;
     padding: 6px 4px;
   }
@@ -131,12 +131,12 @@
   .checkbox-container input[type="checkbox"]:checked + label,
   #button-filter-clearall:hover,
   .checkbox-container label:hover {
+    transition: all 0.2s ease-in-out;
     color: white;
     background-color: #27b99e;
   }
 
   .checkbox-container label:hover {
-    transition: all 0.2s ease-in-out;
     white-space: wrap;
     overflow: visible;
     display: flex;
@@ -254,7 +254,7 @@
   }
 
   // if filter is applied, hide all markers except for the filtered
-  function applyFilters(filter, checked) {
+  function applyFilters() {
     const filtersChecked = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).filter((elem) => elem.checked).map((e) => e.name);
     if ( filtersChecked ) {
       showing.innerHTML = "showing: " + filtersChecked.join(" & ");
