@@ -57,12 +57,14 @@
 
   .marker-title {
     display: flex;
+    align-items: center;
+    flex-flow: row;
   }
 
   .marker-title-logo {
     max-width: 36px;
     height: fit-content;
-    padding-right: 2px;
+    padding-right: 6px;
     margin: 0;
   }
 
@@ -163,7 +165,7 @@
 <div id="container">
   <div id="map"></div>
   <div id="filters-header-container">
-    <h3 id="filter-label">Filters</h3>
+    <h3 id="filter-label">Filter by area of work</h3>
     <p id="applied-filters"></p>
   </div>
   <div id="filters">
@@ -257,7 +259,7 @@
   function applyFilters() {
     const filtersChecked = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).filter((elem) => elem.checked).map((e) => e.name);
     if ( filtersChecked ) {
-      showing.innerHTML = "showing: " + filtersChecked.join(" & ");
+      showing.innerHTML = filtersChecked.join(" & ");
       Object.keys(orgMarkers).forEach((org) => {
         // return all markers to hidden by default
         if ( !orgMarkers[org].isHidden ) {
