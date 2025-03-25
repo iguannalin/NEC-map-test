@@ -183,6 +183,7 @@
   </div>
 </div>
 <script>
+  const fieldsMap = { "Logo": "fld92iVct2qezn40o", "Member Org Name": "fld9ztr96KifI3jzV", "Region": "fldsqOuSyM37oFLEk", "SE models (from 2022 Member Survey 4)": "fldz37nxMnBGVfZA0", "City": "fld5lGfknBhZcXBOM", "State": "fld6PhCO8GyehA5uJ", "Country": "fldgzJ4QKFToRcIP2", "Location": "fldWUOcEZokNNZdSQ", "Organizational mission": "fldTDjO5EnFvQtuay", "Website": "fldB2uhXcgRy9UiBl" };
   const filterColors = 5; // available unique theme colors
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
@@ -225,28 +226,28 @@
   function placeOnMap(entry, placeName, locationData, markerColorClass) {
     markerCount++;
     const marker = L.marker([locationData.latitude, locationData.longitude], {
-      title: entry["Member Org Name"],
+      title: entry[fieldsMap["Member Org Name"]],
       riseOnHover: true,
       icon: markerIcon(markerColorClass)
     }).addTo(map);
     let orgMission = "";
     // shorten org mission statement
-    if ( entry["Organizational mission"] ) {
+    if ( entry[fieldsMap["Organizational mission"]] ) {
       const max = 175;
-      orgMission = entry["Organizational mission"];
+      orgMission = entry[fieldsMap["Organizational mission"]];
       if ( orgMission.length > max ) orgMission = orgMission.substring(0, max) + "...";
     }
     const markerTitle = () => {
       let title = `<div class="marker-title">`;
-      if (entry["Logo"] && entry["Logo"].length > 0) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
-      return title + `<b>${ entry["Member Org Name"] }</b></div>`;
+      if (entry[fieldsMap["Logo"]] && entry[fieldsMap["Logo"]].length > 0) title += `<img class="marker-title-logo" src="${ entry[fieldsMap["Logo"]][0]["thumbnails"]["small"].url }"/> `;
+      return title + `<b>${ entry[fieldsMap["Member Org Name"]] }</b></div>`;
     }
     marker.bindPopup(`
                     ${ markerTitle() }
                     <p class="orgMission">${ orgMission }</p>
-                    <p>${ entry["Region"] ? 'Region: ' + entry["Region"] : "" }</p>
+                    <p>${ entry[fieldsMap["Region"]] ? 'Region: ' + entry[fieldsMap["Region"]] : "" }</p>
                     <p class="placeName">${ placeName }</p>
-                    <p>${ entry["Website"] ? 'Website: <a href=' + entry["Website"] + '>' + entry["Website"] + '</a>' : "" }</p>
+                    <p>${ entry[fieldsMap["Website"]] ? 'Website: <a href=' + entry[fieldsMap["Website"]] + '>' + entry[fieldsMap["Website"]] + '</a>' : "" }</p>
                 `);
     orgMarkers[entry["Member Org Name"]] = { marker, isHidden: false };
     layerGroup.addLayer(marker);
@@ -292,15 +293,15 @@
 
   function sortOrganizationsByFilters(entry) {
     let lastRandomColor = "filter-color-0"
-    if ( entry["SE models (from 2022 Member Survey 4)"] ) {
-      entry["SE models (from 2022 Member Survey 4)"].forEach((filter) => {
+    if ( entry[fieldsMap["SE models (from 2022 Member Survey 4)"]] ) {
+      entry[fieldsMap["SE models (from 2022 Member Survey 4)"]].forEach((filter) => {
         if ( filters[filter] ) { // if filter already exists in list
-          filters[filter]["organizations"].push(entry["Member Org Name"]);
+          filters[filter]["organizations"].push(entry[fieldsMap["Member Org Name"]]);
           lastRandomColor = filters[filter]["colorClass"];
         } else { // otherwise create a new entry
           lastRandomColor = "filter-color-" + ((filter.length % filterColors) + 1);
           filters[filter] = {
-            organizations: [entry["Member Org Name"]],
+            organizations: [entry[fieldsMap["Member Org Name"]]],
             colorClass: lastRandomColor
           };
         }
@@ -363,9 +364,9 @@
       // go through each entry, and find its lat/long coordinates
       // narrowing from country down to city, being as specific with the location as it can be
       data.forEach((entry) => {
-        if ( entry["fields"] ) entry = entry["fields"];
-        if ( entry["Country"] ) {
-          let country = entry["Country"][0].trim().toLowerCase();
+        if ( entry[fieldsMap["fields"]] ) entry = entry[fieldsMap["fields"]];
+        if ( entry[fieldsMap["Country"]] ) {
+          let country = entry[fieldsMap["Country"]][0].trim().toLowerCase();
           if ( country === "united states" ) country = "united states of america"; // convert for geodb, because geodb calls it the USA but airtable calls it the US
           if ( !places[country] ) { // if country doesn't already exist in store (places.json)
             fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries?namePrefix=${ country }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
@@ -388,11 +389,11 @@
             } else { // if country could not be found in store or on geodb
               popupPlaceName = country;
               popupLocationData = places[country];
-              console.info("No country found for " + entry["Member Org Name"]);
+              console.info("No country found for " + entry[fieldsMap["Member Org Name"]]);
             }
 
-          if ( country === "united states of america" && entry["State"] ) { // in the case where there is a state listed
-            const state = entry["State"][0].trim().toLowerCase();
+          if ( country === "united states of america" && entry[fieldsMap["State"]] ) { // in the case where there is a state listed
+            const state = entry[fieldsMap["State"]][0].trim().toLowerCase();
             if ( !places[state + "+" + country] ) { // if state doesn't already exist in store (places.json)
               // need to first get iso code of state
               fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/US/regions?namePrefix=${ state }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
@@ -421,12 +422,12 @@
               } else { // if state could not be found in store or on geodb
                 popupPlaceName = `${ state }, ${ country }`;
                 popupLocationData = places[country];
-                console.info("No state found for " + entry["Member Org Name"]);
+                console.info("No state found for " + entry[fieldsMap["Member Org Name"]]);
               }
           }
 
-          if ( entry["City"] ) { // in the case where there is a city listed
-            const city = entry["City"][0].trim().toLowerCase();
+          if ( entry[fieldsMap["City"]] ) { // in the case where there is a city listed
+            const city = entry[fieldsMap["City"]][0].trim().toLowerCase();
             if ( !places[city + "+" + country] ) { // if city does not already exist in store
               fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/places?namePrefix=${ city }&hateoasMode=false&limit=5&offset=0`).then((d) => d.json()).then((r) => {
                 if ( r && r.data ) {
@@ -451,11 +452,11 @@
               } else { // if city could not be found in store or on geodb
                 popupPlaceName = `${ city }, ${ country }`;
                 popupLocationData = places[country];
-                console.info("No city found for " + entry["Member Org Name"]);
+                console.info("No city found for " + entry[fieldsMap["Member Org Name"]]);
               }
           }
         } else { // if no country listed
-          console.info("No country listed for " + entry["Member Org Name"] + "; couldn't place on map");
+          console.info("No country listed for " + entry[fieldsMap["Member Org Name"]] + "; couldn't place on map");
         }
         const markerColor = sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
         placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
