@@ -250,8 +250,10 @@
     showing.innerHTML = "";
     document.querySelectorAll("input[type='checkbox']:checked").forEach((elem) => elem.checked = false);
     Object.keys(orgMarkers).forEach((org) => {
-      orgMarkers[org].isHidden = false;
-      layerGroup.addLayer(orgMarkers[org].marker);
+      if (orgMarkers[org].isHidden) {
+        orgMarkers[org].isHidden = false;
+        layerGroup.addLayer(orgMarkers[org].marker);
+      }
     });
   }
 
@@ -290,32 +292,34 @@
             organizations: [entry["Name"]],
             colorClass: lastRandomColor
           };
-          createFilterCheckbox(filter);
         }
       });
     }
     return lastRandomColor;
   }
 
-  function createFilterCheckbox(filter) {
-    const container = document.createElement("div");
-    container.className = "checkbox-container";
-    const input = document.createElement("input");
-    const label = document.createElement("label");
-    const filterClassName = "filter-" + filter.replace(/[^\p{L}\p{N}]/giu, ''); // convert category into a CSS-friendly class-name
-    input.id = `checkbox-${ filterClassName }`;
-    input.type = "checkbox";
-    input.name = filter;
-    label.title = filter;
-    label.htmlFor = `checkbox-${ filterClassName }`;
-    label.innerText = filter;
-    input.addEventListener(("change"), (elem) => {
-      applyFilters(elem.target.name, elem.target.checked);
+  function createFilterCheckboxes() {
+    const filtersContainer = document.getElementById("filters");
+    Object.keys(filters).sort().forEach((filter) => {
+      const container = document.createElement("div");
+      container.className = "checkbox-container";
+      const input = document.createElement("input");
+      const label = document.createElement("label");
+      const filterClassName = "filter-" + filter.replace(/[^\p{L}\p{N}]/giu, ''); // convert category into a CSS-friendly class-name
+      input.id = `checkbox-${ filterClassName }`;
+      input.type = "checkbox";
+      input.name = filter;
+      label.title = filter;
+      label.htmlFor = `checkbox-${ filterClassName }`;
+      label.innerText = filter;
+      input.addEventListener(("change"), (elem) => {
+        applyFilters(elem.target.name, elem.target.checked);
+      });
+      container.appendChild(input);
+      container.appendChild(label);
+      filtersContainer.appendChild(container);
+      label.classList.add(filters[filter]["colorClass"]);
     });
-    container.appendChild(input);
-    container.appendChild(label);
-    filtersContainer.appendChild(container);
-    label.classList.add(filters[filter]["colorClass"]);
   }
 
   function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
@@ -445,6 +449,7 @@
           const markerColor = sortOrganizationsByFilters(entry); // marker can only be styled by category after it is placed on map / rendered
           placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
         });
+        createFilterCheckboxes();
       });
     });
   }
