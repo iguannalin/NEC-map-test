@@ -250,10 +250,8 @@
     showing.innerHTML = "";
     document.querySelectorAll("input[type='checkbox']:checked").forEach((elem) => elem.checked = false);
     Object.keys(orgMarkers).forEach((org) => {
-      if (orgMarkers[org].isHidden) {
-        orgMarkers[org].isHidden = false;
-        layerGroup.addLayer(orgMarkers[org].marker);
-      }
+      orgMarkers[org].isHidden = false;
+      layerGroup.addLayer(orgMarkers[org].marker);
     });
   }
 
