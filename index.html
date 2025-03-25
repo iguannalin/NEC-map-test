@@ -182,6 +182,7 @@
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
   let orgMarkers = {}; // { "orgTitle": { "marker": Marker, "isHidden": "false" } }
   let filters = {}; // { "Mutual Aid" : { organizations: [ "Upstream Podcast" ], colorClass: "filter-color-0" }, ... }
+  let colorIndex = 0;
   const showing = document.querySelector("#applied-filters");
   const filtersContainer = document.getElementById("filters");
   const svgTemplate = `
@@ -278,22 +279,23 @@
   }
 
   function sortOrganizationsByFilters(entry) {
-    let lastRandomColor = "filter-color-0"
+    let markerColor = "filter-color-0";
     if ( entry["SE Models"] ) {
       entry["SE Models"].forEach((filter) => {
         if ( filters[filter] ) { // if filter already exists in list
           filters[filter]["organizations"].push(entry["Name"]);
-          lastRandomColor = filters[filter]["colorClass"];
+          markerColor = filters[filter]["colorClass"];
         } else { // otherwise create a new entry
-          lastRandomColor = "filter-color-" + ((filter.length % filterColors) + 1);
+          markerColor = "filter-color-" + ((colorIndex % filterColors) + 1);
           filters[filter] = {
             organizations: [entry["Name"]],
-            colorClass: lastRandomColor
+            colorClass: markerColor
           };
+          colorIndex++;
         }
       });
     }
-    return lastRandomColor;
+    return markerColor;
   }
 
   function createFilterCheckboxes() {
