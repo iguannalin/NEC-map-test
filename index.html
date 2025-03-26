@@ -12,9 +12,13 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
           crossorigin=""></script>
-  <!-- leaflet-search created by Stefano Cudini https://opengeo.tech/stefano-cudini/ -->
-  <script src="dist/leaflet-search.min.js"></script>
+
+  <!--   Plugins -->
   <link rel="stylesheet" href="dist/leaflet-search.min.css"/>
+  <script src="dist/leaflet-search.min.js"></script>
+  <link rel="stylesheet" href="dist/MarkerCluster.css">
+  <link rel="stylesheet" href="dist/MarkerCluster.Default.css">
+  <script src="dist/leaflet.markercluster.js"></script>
   <link rel="stylesheet" href="index.css"/>
 </head>
 <body>
@@ -76,6 +80,7 @@
   //
   // MAP VARIABLES
   //
+
   const markerIcon = (filterColorClass = 'filter-color-0') => L.divIcon({
     html: svgTemplate,
     iconSize: [30, 30],
@@ -85,21 +90,20 @@
   });
 
   // create map
-  const map = L.map('map').setView([45, -100], 3);
+  const map = L.map('map').setView([45, -100], 4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 20
   }).addTo(map);
 
-  // add search bar to map
-  const layerGroup = new L.LayerGroup();	//layer contain searched elements
-  map.addLayer(layerGroup);
+  // create cluster & search
+  const markerClusterGroup = L.markerClusterGroup();
   const controlSearch = new L.Control.Search({
     position: 'topright',
-    layer: layerGroup,
+    layer: markerClusterGroup,
     initial: false,
-    zoom: 14,
+    zoom: 16,
     marker: { icon: false, animate: true }
   });
   map.addControl(controlSearch);
@@ -108,14 +112,14 @@
   // MAP MARKER MANIPULATION FUNCTIONS
   //
 
-  function placeOnMap(entry, placeName, locationData, markerColorClass) {
+  function createMarker(entry, placeName, locationData, markerColorClass) {
     if ( !orgMarkers[entry["Name"]] ) { // entries are unique by name--if there is more than one entry with the same name, it is ignored
       markerCount++;
       const marker = L.marker([locationData.latitude, locationData.longitude], {
         title: entry["Name"],
         riseOnHover: true,
         icon: markerIcon(markerColorClass)
-      }).addTo(map);
+      });
       let orgMission = "";
       // shorten org mission statement
       if ( entry["Mission"] ) {
@@ -133,7 +137,7 @@
         if ( entry["Website"] ) {
           link += "<a target='_blank' rel='noopener noreferrer' href=";
           const re = new RegExp("^(http|https)://", "i");
-          if (!re.test(entry["Website"])) link += "https://";
+          if ( !re.test(entry["Website"]) ) link += "https://";
           link += entry["Website"];
           link += `>${ entry["Website"] }</a>`;
         }
@@ -147,7 +151,6 @@
                     <p class="orgLink">${ markerLink() }</p>
                 `);
       orgMarkers[entry["Name"]] = { marker, isHidden: false };
-      layerGroup.addLayer(marker);
     }
   }
 
@@ -183,13 +186,44 @@
     return markerColor;
   }
 
+  function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
+    const latitude = location.latitude + (Math.random() * 0.007 * ((Math.random() > 0.5) ? 1 : -1));
+    const longitude = location.longitude + (Math.random() * 0.007 * ((Math.random() > 0.5) ? 1 : -1));
+    return { latitude, longitude };
+  }
+
+  //
+  // DATA MANIPULATION FUNCTIONS
+  //
+
+  function sortOrganizationsByFilters(entry, sortedOrgs, filterByWork = true) {
+    let markerColor = "filter-color-0";
+    let filterType = filterByWork ? "SE Models" : "Leadership";
+    if ( entry[filterType] ) {
+      entry[filterType].forEach((filter) => {
+        filter = filter.toLowerCase();
+        if ( sortedOrgs[filter] ) { // if filter already exists in list
+          sortedOrgs[filter]["organizations"].push(entry["Name"]);
+          markerColor = sortedOrgs[filter]["colorClass"];
+        } else { // otherwise create a new entry
+          markerColor = "filter-color-" + ((colorIndex % filterColors) + 1);
+          sortedOrgs[filter] = {
+            organizations: [entry["Name"]],
+            colorClass: markerColor
+          };
+          colorIndex++;
+        }
+      });
+    }
+    return markerColor;
+  }
+
   // clear all filters, and show all org markers
-  function clearAllFilters(clearLeadership = false) {
+  function clearAllFilters() {
     showing.innerHTML = `showing ${ markerCount } members`;
     document.querySelectorAll("input[type='checkbox']:checked").forEach((elem) => elem.checked = false);
     Object.keys(orgMarkers).forEach((org) => {
-      orgMarkers[org].isHidden = false;
-      layerGroup.addLayer(orgMarkers[org].marker);
+      editMarkerOnMap(orgMarkers[org], false);
     });
   }
 
@@ -198,8 +232,8 @@
     isHidden: false
   }, isRemoved = false) {
     markerObj.isHidden = isRemoved;
-    if ( isRemoved ) layerGroup.removeLayer(markerObj.marker);
-    else layerGroup.addLayer(markerObj.marker);
+    if ( isRemoved ) markerClusterGroup.removeLayer(markerObj.marker);
+    else markerClusterGroup.addLayer(markerObj.marker);
   }
 
   // if filter is applied, hide all markers except for the filtered
@@ -350,7 +384,7 @@
           }
           const markerColor = sortOrganizationsByFilters(entry, filters); // marker can only be styled by category after it is placed on map / rendered
           sortOrganizationsByFilters(entry, filtersLeadership, false);
-          placeOnMap(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
+          createMarker(entry, popupPlaceName.replace("united states of america", "united states"), getOffsetLocation(popupLocationData), markerColor);
         });
         createFilterCheckboxes();
         createFilterCheckboxes(false);
