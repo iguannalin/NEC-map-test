@@ -57,7 +57,6 @@
   //
   //  VARIABLES
   //
-
   const filterColors = 5; // available unique theme colors
   let markerCount = 0; // for counting markers on map
   let places = {}; // { "placeName" : { "latitude": 0.00, "longitude": 0.00 } }
@@ -80,7 +79,6 @@
   //
   // MAP VARIABLES
   //
-
   const markerIcon = (filterColorClass = 'filter-color-0') => L.divIcon({
     html: svgTemplate,
     iconSize: [30, 30],
@@ -90,7 +88,7 @@
   });
 
   // create map
-  const map = L.map('map').setView([45, -100], 4);
+  const map = L.map('map').setView([42, -95], 4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
@@ -98,7 +96,10 @@
   }).addTo(map);
 
   // create cluster & search
-  const markerClusterGroup = L.markerClusterGroup();
+  const markerClusterGroup = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 25
+  });
   const controlSearch = new L.Control.Search({
     position: 'topright',
     layer: markerClusterGroup,
@@ -111,7 +112,6 @@
   //
   // MAP MARKER MANIPULATION FUNCTIONS
   //
-
   function createMarker(entry, placeName, locationData, markerColorClass) {
     if ( !orgMarkers[entry["Name"]] ) { // entries are unique by name--if there is more than one entry with the same name, it is ignored
       markerCount++;
@@ -155,47 +155,15 @@
   }
 
   function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
-    const latitude = location.latitude + (Math.random() * 0.007 * ((Math.random() > 0.5) ? 1 : -1));
-    const longitude = location.longitude + (Math.random() * 0.007 * ((Math.random() > 0.5) ? 1 : -1));
+    const latitude = location.latitude + (Math.random() * 0.005 * ((Math.random() > 0.5) ? 1 : -1));
+    const longitude = location.longitude + (Math.random() * 0.005 * ((Math.random() > 0.5) ? 1 : -1));
     return { latitude, longitude };
   }
+
 
   //
   // DATA MANIPULATION FUNCTIONS
   //
-
-  function sortOrganizationsByFilters(entry, sortedOrgs, filterByWork = true) {
-    let markerColor = "filter-color-0";
-    let filterType = filterByWork ? "SE Models" : "Leadership";
-    if ( entry[filterType] ) {
-      entry[filterType].forEach((filter) => {
-        filter = filter.toLowerCase();
-        if ( sortedOrgs[filter] ) { // if filter already exists in list
-          sortedOrgs[filter]["organizations"].push(entry["Name"]);
-          markerColor = sortedOrgs[filter]["colorClass"];
-        } else { // otherwise create a new entry
-          markerColor = "filter-color-" + ((colorIndex % filterColors) + 1);
-          sortedOrgs[filter] = {
-            organizations: [entry["Name"]],
-            colorClass: markerColor
-          };
-          colorIndex++;
-        }
-      });
-    }
-    return markerColor;
-  }
-
-  function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
-    const latitude = location.latitude + (Math.random() * 0.007 * ((Math.random() > 0.5) ? 1 : -1));
-    const longitude = location.longitude + (Math.random() * 0.007 * ((Math.random() > 0.5) ? 1 : -1));
-    return { latitude, longitude };
-  }
-
-  //
-  // DATA MANIPULATION FUNCTIONS
-  //
-
   function sortOrganizationsByFilters(entry, sortedOrgs, filterByWork = true) {
     let markerColor = "filter-color-0";
     let filterType = filterByWork ? "SE Models" : "Leadership";
@@ -263,7 +231,6 @@
   //
   // DATA FETCH FUNCTIONS
   //
-
   // get stored geolocation data to save api calls to fetch lat/long coords
   async function fetchPlaces() {
     const response = await fetch("places.json")
@@ -396,7 +363,6 @@
   //
   // DISPLAY FUNCTIONS
   //
-
   function createFilterCheckboxes(filterByWork = true) {
     let filtersContainer, filteredOrgs;
     if ( filterByWork ) {
