@@ -127,12 +127,22 @@
       if ( entry["Logo"] && entry["Logo"].length > 0 ) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
       return title + `<b>${ entry["Name"] }</b></div>`;
     }
+    const markerLink = () => {
+      let link = "";
+      if ( entry["Website"] ) {
+        link += "<a target='_blank' href=";
+        if ( !entry["Website"].startsWith("https://") || !entry["Website"].startsWith("http://") ) link += "https://" + entry["Website"]
+        else link += entry["Website"];
+        link += `>${entry["Website"]}</a>`;
+      }
+      return link;
+    }
     marker.bindPopup(`
                     ${ markerTitle() }
                     <p class="orgMission">${ orgMission }</p>
                     <p>${ entry["Region"] ? 'Region: ' + entry["Region"] : "" }</p>
                     <p class="placeName">${ placeName }</p>
-                    <p>${ entry["Website"] ? 'Website: <a href=' + entry["Website"] + '>' + entry["Website"] + '</a>' : "" }</p>
+                    <p>${ markerLink() }</p>
                 `);
     orgMarkers[entry["Name"]] = { marker, isHidden: false };
     layerGroup.addLayer(marker);
@@ -365,9 +375,7 @@
       label.title = filter;
       label.htmlFor = `checkbox-${ filterClassName }`;
       label.innerText = filter;
-      input.addEventListener(("change"), (elem) => {
-        applyFilters();
-      });
+      input.addEventListener(("change"), applyFilters);
       container.appendChild(input);
       container.appendChild(label);
       filtersContainer.appendChild(container);
