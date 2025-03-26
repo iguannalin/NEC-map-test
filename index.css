@@ -97,7 +97,7 @@ body {
 #applied-filters {
   background: #dedede;
   font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
-  font-style: italic;
+  font-size: 14px;
   margin: 0;
   padding: 6px 12px;
 }
