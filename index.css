@@ -25,13 +25,21 @@ body {
   width: 275px;
 }
 
+.clusterCount {
+  position: absolute;
+}
+
 .clusterIcon {
   align-items: center;
-  background-color: #f9df4f;
+  background-color: #f9df4f1f;
+  border-color: #f9df4f;
   border-radius: 50%;
-  color: #1b232d;
+  color: #007e67;
   display: flex;
-  font-size: 16px;
+  fill: #f9df4f;
+  font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
   justify-content: center;
   outline: 5px solid #ffdd004f;
 }
@@ -41,7 +49,9 @@ body {
 }
 
 .clusterIcon.large {
-  background-color: #27b99e;
+  background-color: #27b99e1f;
+  border-color: #27b99e;
+  fill: #27b99e;
   outline: 5px solid #5cbaa875;
 }
 
