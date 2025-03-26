@@ -109,43 +109,46 @@
   //
 
   function placeOnMap(entry, placeName, locationData, markerColorClass) {
-    markerCount++;
-    const marker = L.marker([locationData.latitude, locationData.longitude], {
-      title: entry["Name"],
-      riseOnHover: true,
-      icon: markerIcon(markerColorClass)
-    }).addTo(map);
-    let orgMission = "";
-    // shorten org mission statement
-    if ( entry["Mission"] ) {
-      const max = 175;
-      orgMission = entry["Mission"];
-      if ( orgMission.length > max ) orgMission = orgMission.substring(0, max) + "...";
-    }
-    const markerTitle = () => {
-      let title = `<div class="marker-title">`;
-      if ( entry["Logo"] && entry["Logo"].length > 0 ) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
-      return title + `<b>${ entry["Name"] }</b></div>`;
-    }
-    const markerLink = () => {
-      let link = "";
-      if ( entry["Website"] ) {
-        link += "<a target='_blank' href=";
-        if ( !entry["Website"].startsWith("https://") || !entry["Website"].startsWith("http://") ) link += "https://" + entry["Website"]
-        else link += entry["Website"];
-        link += `>${entry["Website"]}</a>`;
+    if ( !orgMarkers[entry["Name"]] ) { // entries are unique by name--if there is more than one entry with the same name, it is ignored
+      markerCount++;
+      const marker = L.marker([locationData.latitude, locationData.longitude], {
+        title: entry["Name"],
+        riseOnHover: true,
+        icon: markerIcon(markerColorClass)
+      }).addTo(map);
+      let orgMission = "";
+      // shorten org mission statement
+      if ( entry["Mission"] ) {
+        const max = 175;
+        orgMission = entry["Mission"];
+        if ( orgMission.length > max ) orgMission = orgMission.substring(0, max) + "...";
       }
-      return link;
-    }
-    marker.bindPopup(`
+      const markerTitle = () => {
+        let title = `<div class="marker-title">`;
+        if ( entry["Logo"] && entry["Logo"].length > 0 ) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
+        return title + `<b>${ entry["Name"] }</b></div>`;
+      }
+      const markerLink = () => {
+        let link = "";
+        if ( entry["Website"] ) {
+          link += "<a target='_blank' rel='noopener noreferrer' href=";
+          const re = new RegExp("^(http|https)://", "i");
+          if (!re.test(entry["Website"])) link += "https://";
+          link += entry["Website"];
+          link += `>${ entry["Website"] }</a>`;
+        }
+        return link;
+      }
+      marker.bindPopup(`
                     ${ markerTitle() }
                     <p class="orgMission">${ orgMission }</p>
                     <p>${ entry["Region"] ? 'Region: ' + entry["Region"] : "" }</p>
                     <p class="placeName">${ placeName }</p>
                     <p>${ markerLink() }</p>
                 `);
-    orgMarkers[entry["Name"]] = { marker, isHidden: false };
-    layerGroup.addLayer(marker);
+      orgMarkers[entry["Name"]] = { marker, isHidden: false };
+      layerGroup.addLayer(marker);
+    }
   }
 
   function getOffsetLocation(location) { // offset location by a few points just to scatter markers by a little bit
@@ -190,29 +193,36 @@
     });
   }
 
+  function editMarkerOnMap(markerObj = {
+    marker: null,
+    isHidden: false
+  }, isRemoved = false) {
+    markerObj.isHidden = isRemoved;
+    if ( isRemoved ) layerGroup.removeLayer(markerObj.marker);
+    else layerGroup.addLayer(markerObj.marker);
+  }
+
   // if filter is applied, hide all markers except for the filtered
   function applyFilters() {
     const filtersChecked = Array.from(document.querySelectorAll("input[type='checkbox']:checked")).filter((elem) => elem.checked).map((e) => e.name);
+    let filteredCount = 0;
     if ( filtersChecked.length > 0 ) {
-      showing.innerHTML = "showing: " + filtersChecked.join(" & ");
       Object.keys(orgMarkers).forEach((org) => {
         // return all markers to hidden by default
         if ( !orgMarkers[org].isHidden ) {
-          layerGroup.removeLayer(orgMarkers[org].marker);
-          orgMarkers[org].isHidden = true;
+          editMarkerOnMap(orgMarkers[org], true);
         }
         filtersChecked.forEach((filter) => {
           // check if org is in filter group
-          if ( filters[filter] && filters[filter]["organizations"].includes(org) ) {
-            orgMarkers[org].isHidden = false;
-            layerGroup.addLayer(orgMarkers[org].marker);
-          }
-          if ( filtersLeadership[filter] && filtersLeadership[filter]["organizations"].includes(org) ) {
-            orgMarkers[org].isHidden = false;
-            layerGroup.addLayer(orgMarkers[org].marker);
+          if ( filters[filter] && filters[filter]["organizations"].includes(org) || filtersLeadership[filter] && filtersLeadership[filter]["organizations"].includes(org) ) {
+            if ( orgMarkers[org].isHidden ) {
+              editMarkerOnMap(orgMarkers[org]);
+              filteredCount++;
+            }
           }
         });
       });
+      showing.innerHTML = `showing ${ filteredCount }: ${ filtersChecked.join(" & ") }`;
     } else clearAllFilters();
   }
 
