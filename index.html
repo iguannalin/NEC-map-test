@@ -143,8 +143,8 @@
                     ${ markerTitle() }
                     <p class="orgMission">${ orgMission }</p>
                     <p>${ entry["Region"] ? 'Region: ' + entry["Region"] : "" }</p>
-                    <p class="placeName">${ placeName }</p>
-                    <p>${ markerLink() }</p>
+                    <p class="orgLocation">${ placeName }</p>
+                    <p class="orgLink">${ markerLink() }</p>
                 `);
       orgMarkers[entry["Name"]] = { marker, isHidden: false };
       layerGroup.addLayer(marker);

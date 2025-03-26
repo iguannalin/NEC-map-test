@@ -25,7 +25,9 @@ body {
   width: 275px;
 }
 
-.placeName { text-transform: capitalize; }
+.orgLocation { text-transform: capitalize; }
+
+.orgLink a { overflow-wrap: break-word; }
 
 .disclaimer {
   background: rgba(255, 255, 255, 0.8);
