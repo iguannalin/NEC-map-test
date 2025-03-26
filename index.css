@@ -26,19 +26,26 @@ body {
 }
 
 .clusterIcon {
-  background-color: #27b99e;
-  color: white;
+  align-items: center;
+  background-color: #f9df4f;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  color: #1b232d;
   display: flex;
   font-size: 16px;
   justify-content: center;
-  align-items: center;
-  outline: 5px solid #5cbaa875;
+  outline: 5px solid #ffdd004f;
 }
 
 .clusterIcon:hover {
+  outline: 10px solid #ffdd004f;
+}
+
+.clusterIcon.large {
+  background-color: #27b99e;
+  outline: 5px solid #5cbaa875;
+}
+
+.clusterIcon.large:hover {
   outline: 10px solid #5cbaa875;
 }
 

@@ -98,10 +98,10 @@
   // create cluster & search
   const markerClusterGroup = L.markerClusterGroup({
     showCoverageOnHover: true,
-    maxClusterRadius: 25,
+    maxClusterRadius: 35,
     iconCreateFunction: (cluster) => L.divIcon({
       html: cluster.getChildCount(),
-      className: 'clusterIcon',
+      className: 'clusterIcon ' + (cluster.getChildCount() < 10 ? "small" : "large"),
       iconSize: L.point(30, 30)
     })
   });
