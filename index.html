@@ -97,8 +97,13 @@
 
   // create cluster & search
   const markerClusterGroup = L.markerClusterGroup({
-    showCoverageOnHover: false,
-    maxClusterRadius: 25
+    showCoverageOnHover: true,
+    maxClusterRadius: 25,
+    iconCreateFunction: (cluster) => L.divIcon({
+      html: cluster.getChildCount(),
+      className: 'clusterIcon',
+      iconSize: L.point(30, 30)
+    })
   });
   const controlSearch = new L.Control.Search({
     position: 'topright',

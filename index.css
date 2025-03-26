@@ -25,6 +25,23 @@ body {
   width: 275px;
 }
 
+.clusterIcon {
+  background-color: #27b99e;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  font-size: 16px;
+  justify-content: center;
+  align-items: center;
+  outline: 5px solid #5cbaa875;
+}
+
+.clusterIcon:hover {
+  outline: 10px solid #5cbaa875;
+}
+
 .orgLocation { text-transform: capitalize; }
 
 .orgLink a { overflow-wrap: break-word; }
