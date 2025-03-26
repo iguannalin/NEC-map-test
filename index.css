@@ -1,0 +1,172 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
+
+body {
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+#map {
+  border: 2px solid #1b232d;
+  font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
+  height: 500px;
+}
+
+.search-tip {
+  inline-size: 122px;
+  right: 10%;
+  white-space: normal !important;
+}
+
+.leaflet-popup {
+  max-height: 300px;
+  overflow: scroll;
+  width: 275px;
+}
+
+.placeName { text-transform: capitalize; }
+
+.disclaimer {
+  background: rgba(255, 255, 255, 0.8);
+  color: #27b99e;
+  float: right;
+  font-size: 14px;
+  margin: 0;
+  padding: 5px;
+}
+
+.marker-title {
+  align-items: center;
+  display: flex;
+  flex-flow: row;
+}
+
+.marker-title-logo {
+  height: fit-content;
+  margin: 0;
+  max-width: 36px;
+  padding-right: 6px;
+}
+
+#filters-header-container {
+  background: #f1dc5b;
+  border: 2px solid #1b232d;
+  border-bottom: none;
+  border-top: none;
+  color: #1b232d;
+  font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin: -2px 0 -2px;
+  overflow-y: scroll;
+  text-transform: lowercase;
+}
+
+#filter-tabs {
+  display: flex;
+  flex-flow: row;
+}
+
+.filter-tab {
+  background: transparent;
+  border: 2px solid #1b232d;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-family: "Titillium Web", Helvetica, Arial, Lucida, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 12px 16px;
+  text-transform: uppercase;
+}
+
+.filter-tab:not(.is-open):hover {
+  color: #27b99e;
+}
+
+.filter-tab.is-open {
+  border-bottom: 2px solid #f0dc5b;
+}
+
+#filters-container {
+  border: 2px solid #1b232d;
+  display: flex;
+  flex-flow: column;
+}
+
+#applied-filters {
+  background: #dedede;
+  font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
+  font-style: italic;
+  margin: 0;
+  padding: 6px 12px;
+}
+
+.filters:not(.is-open) {
+  display: none;
+}
+
+.filters {
+  display: flex;
+  flex-flow: row wrap;
+  height: 190px;
+  overflow: scroll;
+  padding: 6px 4px;
+  place-content: flex-start;
+}
+
+.checkbox-container input {
+  position: absolute;
+  visibility: hidden;
+}
+
+.checkbox-container label, .button-filter-clearall {
+  background-color: transparent;
+  border: 2px solid #27b99e;
+  border-radius: 20px;
+  box-sizing: border-box;
+  color: #1b232d;
+  cursor: pointer;
+  display: block;
+  font-family: "Poppins", Helvetica, Arial, Lucida, sans-serif;
+  font-size: 14px;
+  margin: 4px;
+  max-width: 20ch;
+  overflow: hidden;
+  padding: 4px 10px;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.checkbox-container input[type="checkbox"]:checked + label,
+.button-filter-clearall:hover,
+.checkbox-container label:hover {
+  background-color: #27b99e;
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.checkbox-container label:hover {
+  display: flex;
+  overflow: visible;
+  white-space: wrap;
+}
+
+.button-filter-clearall {
+  border: 2px solid #1b232d;
+  text-transform: uppercase;
+}
+
+.filter-color-0 { border-color: #fffee7 !important; fill: #fffee7;}
+
+.filter-color-1 { border-color: #e07ee0 !important; fill: #e07ee0;}
+
+.filter-color-2 { border-color: #f76a57 !important; fill: #f76a57;}
+
+.filter-color-3 { border-color: #fcc949 !important; fill: #fcc949;}
+
+.filter-color-4 { border-color: #3fc991 !important; fill: #3fc991;}
+
+.filter-color-5 { border-color: #62b3ef !important; fill: #62b3ef;}
