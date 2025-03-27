@@ -25,6 +25,14 @@ body {
   width: 275px;
 }
 
+.leaflet-popup-content p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .clusterCount {
   position: absolute;
 }
