@@ -203,9 +203,9 @@ window.addEventListener("load", () => {
 
   // get members data from airtable
   async function fetchMemberData() {
-    const response = await fetch("http://localhost:8888/api");
+    // const response = await fetch("http://localhost:8888/api");
     // const response = await fetch("scratch.json");
-    // const response = await fetch("https://nec-airtable.netlify.app/.netlify/functions/api");
+    const response = await fetch("https://nec-airtable.netlify.app/.netlify/functions/api");
     return await response.json();
   }
 
