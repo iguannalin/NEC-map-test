@@ -378,8 +378,13 @@ window.addEventListener("load", () => {
     document.querySelector(".leaflet-bottom.leaflet-right")?.insertBefore(disclaimer, document.querySelector(".leaflet-bottom.leaflet-right div"));
   }
 
+  function addClearFunctionality () {
+    Array.from(document.querySelectorAll(".button-filter-clearall")).forEach((button) => button.addEventListener('click', clearAllFilters));
+  }
+
   populateMap();
   createDisclaimer();
+  addClearFunctionality()
   setTimeout(() => {
     console.info({ places }, { markerCount });
   }, 60000); // just in case, if places is updated, as it is not stored in realtime
