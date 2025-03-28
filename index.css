@@ -21,7 +21,6 @@ body {
 
 .leaflet-popup {
   max-height: 300px;
-  overflow: scroll;
   width: 275px;
 }
 

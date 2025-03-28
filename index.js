@@ -47,7 +47,7 @@ window.addEventListener("load", () => {
     html: svgTemplate(),
     iconSize: [30, 30],
     iconAnchor: [10, 45],
-    popupAnchor: [0, -25],
+    popupAnchor: [1, -55],
     className: 'marker-icon ' + filterColorClass
   });
 
