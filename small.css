@@ -6,26 +6,20 @@
   flex-flow: row wrap;
 }
 
-.filter-tab, .filter-drawer-tab {
-  border-bottom: 2px solid #1b232d;
-  justify-content: flex-start;
-  width: 100%;
+.filter-tab {
+  border: none;
 }
 
-.filter-drawer-tab {
-  display: flex;
-}
-
-.filter-tab:not(.filter-drawer-tab) {
+.filter-tab:not(.is-open) {
   display: none;
 }
 
-.filter-drawer-tab::after {
-  content: "▸";
-  padding-left: 5px;
+.filter-tab.is-open {
+  display: flex;
 }
 
-.filter-drawer-tab.is-open::after {
+.filter-tab.is-open::after {
+  padding-left: 5px;
   content: "▾";
 }
 

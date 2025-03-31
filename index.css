@@ -110,7 +110,7 @@ body {
   display: flex;
 }
 
-.filter-tab, .filter-drawer-tab {
+.filter-tab {
   background: transparent;
   box-sizing: border-box;
   cursor: pointer;

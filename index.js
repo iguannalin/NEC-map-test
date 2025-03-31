@@ -11,7 +11,8 @@ window.addEventListener("load", () => {
   let filtersAreas = {}; // { "Direct Legal Services" : { organizations: [ "New Economy Project" ], colorClass: "filter-color-0" }, ... }
   let colorIndex = 0;
   const showing = document.querySelector("#applied-filters");
-  const drawerTab = document.querySelector(".filter-drawer-tab");
+  let isResponsive = document.querySelector(".filter-tab:not(.is-open)").clientHeight <= 0;
+  let isDrawerOpen = !isResponsive;
 
   //
   // FUNCTION VARIABLES
@@ -362,9 +363,6 @@ window.addEventListener("load", () => {
     Object.keys(filterTabGroups).forEach((key) => {
       const button = filterTabGroups[key]["button"];
       const group = filterTabGroups[key]["group"];
-      if ( drawerTab ) {
-        toggleDrawer();
-      }
       if ( button === e.target ) {
         button.classList.add("is-open");
         group.classList.add("is-open");
@@ -373,6 +371,13 @@ window.addEventListener("load", () => {
         group.classList.remove("is-open");
       }
     });
+    if ( isResponsive && !isDrawerOpen ) {
+      Array.from(document.querySelectorAll(".filter-tab:not(.is-open)")).forEach((button) => button.style.display = "flex");
+      isDrawerOpen = true;
+    } else if ( isResponsive && isDrawerOpen ) {
+      Array.from(document.querySelectorAll(".filter-tab:not(.is-open)")).forEach((button) => button.style.display = "none");
+      isDrawerOpen = false;
+    }
   }
 
   function createDisclaimer() {
@@ -386,18 +391,12 @@ window.addEventListener("load", () => {
     Array.from(document.querySelectorAll(".button-filter-clearall")).forEach((button) => button.addEventListener('click', clearAllFilters));
   }
 
-  function toggleDrawer() {
-    if ( drawerTab.clientHeight > 0 ) {
-      const filterTabs = Array.from(document.querySelectorAll(".filter-tab:not(.filter-drawer-tab)"));
-      drawerTab.classList.toggle("is-open");
-      filterTabs.forEach((tab) => tab.style.display = tab.style.display === "flex" ? "none" : "flex");
-    }
-  }
-
   populateMap();
   createDisclaimer();
   addClearFunctionality();
-  drawerTab.addEventListener("click", toggleDrawer);
+  window.onresize = () => {
+    isResponsive = document.querySelector(".filter-tab:not(.is-open)").clientHeight <= 0;
+  };
   setTimeout(() => {
     console.info({ places }, { markerCount });
   }, 60000); // just in case, if places is updated, as it is not stored in realtime
