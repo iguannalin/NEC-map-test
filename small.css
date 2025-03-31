@@ -8,6 +8,7 @@
 
 .filter-tab {
   border: none;
+  width: 100%;
 }
 
 .filter-tab:not(.is-open) {
