@@ -1,0 +1,31 @@
+#filters-header-container {
+  margin: 0 auto;
+}
+
+#filter-tabs {
+  flex-flow: row wrap;
+}
+
+.filter-tab, .filter-drawer-tab {
+  border-bottom: 2px solid #1b232d;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.filter-drawer-tab {
+  display: flex;
+}
+
+.filter-tab:not(.filter-drawer-tab) {
+  display: none;
+}
+
+.filter-drawer-tab::after {
+  content: "▸";
+  padding-left: 5px;
+}
+
+.filter-drawer-tab.is-open::after {
+  content: "▾";
+}
+

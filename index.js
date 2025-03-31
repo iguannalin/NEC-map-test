@@ -11,6 +11,7 @@ window.addEventListener("load", () => {
   let filtersAreas = {}; // { "Direct Legal Services" : { organizations: [ "New Economy Project" ], colorClass: "filter-color-0" }, ... }
   let colorIndex = 0;
   const showing = document.querySelector("#applied-filters");
+  const drawerTab = document.querySelector(".filter-drawer-tab");
 
   //
   // FUNCTION VARIABLES
@@ -361,6 +362,9 @@ window.addEventListener("load", () => {
     Object.keys(filterTabGroups).forEach((key) => {
       const button = filterTabGroups[key]["button"];
       const group = filterTabGroups[key]["group"];
+      if ( drawerTab ) {
+        toggleDrawer();
+      }
       if ( button === e.target ) {
         button.classList.add("is-open");
         group.classList.add("is-open");
@@ -378,13 +382,20 @@ window.addEventListener("load", () => {
     document.querySelector(".leaflet-bottom.leaflet-right")?.insertBefore(disclaimer, document.querySelector(".leaflet-bottom.leaflet-right div"));
   }
 
-  function addClearFunctionality () {
+  function addClearFunctionality() {
     Array.from(document.querySelectorAll(".button-filter-clearall")).forEach((button) => button.addEventListener('click', clearAllFilters));
+  }
+
+  function toggleDrawer() {
+    const filterTabs = Array.from(document.querySelectorAll(".filter-tab:not(.filter-drawer-tab)"));
+    drawerTab.classList.toggle("is-open");
+    filterTabs.forEach((tab) => tab.style.display = tab.style.display === "flex" ? "none" : "flex");
   }
 
   populateMap();
   createDisclaimer();
-  addClearFunctionality()
+  addClearFunctionality();
+  drawerTab?.addEventListener("click", toggleDrawer);
   setTimeout(() => {
     console.info({ places }, { markerCount });
   }, 60000); // just in case, if places is updated, as it is not stored in realtime

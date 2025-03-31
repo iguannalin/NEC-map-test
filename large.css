@@ -1,0 +1,15 @@
+#filters-header-container {
+  margin: -2px 0 -2px;
+}
+
+#filter-tabs {
+  flex-flow: row;
+}
+
+.filter-tab:not(.filter-drawer-tab) {
+  display: flex;
+}
+
+.filter-drawer-tab {
+  display: none;
+}
