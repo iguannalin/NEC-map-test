@@ -387,15 +387,17 @@ window.addEventListener("load", () => {
   }
 
   function toggleDrawer() {
-    const filterTabs = Array.from(document.querySelectorAll(".filter-tab:not(.filter-drawer-tab)"));
-    drawerTab.classList.toggle("is-open");
-    filterTabs.forEach((tab) => tab.style.display = tab.style.display === "flex" ? "none" : "flex");
+    if ( drawerTab.clientHeight > 0 ) {
+      const filterTabs = Array.from(document.querySelectorAll(".filter-tab:not(.filter-drawer-tab)"));
+      drawerTab.classList.toggle("is-open");
+      filterTabs.forEach((tab) => tab.style.display = tab.style.display === "flex" ? "none" : "flex");
+    }
   }
 
   populateMap();
   createDisclaimer();
   addClearFunctionality();
-  drawerTab?.addEventListener("click", toggleDrawer);
+  drawerTab.addEventListener("click", toggleDrawer);
   setTimeout(() => {
     console.info({ places }, { markerCount });
   }, 60000); // just in case, if places is updated, as it is not stored in realtime
