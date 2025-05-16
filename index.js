@@ -93,7 +93,7 @@ window.addEventListener("load", () => {
       });
       const markerTitle = () => {
         let title = `<div class="marker-title">`;
-        if ( entry["Logo"] && entry["Logo"].length > 0 ) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
+        if ( entry["Logo"] && entry["Logo"].length > 0 && entry["Logo"][0]["thumbnails"] && entry["Logo"][0]["thumbnails"]["small"] ) title += `<img class="marker-title-logo" src="${ entry["Logo"][0]["thumbnails"]["small"].url }"/> `;
         return title + `<b>${ entry["Name"] }</b></div>`;
       }
       const markerLink = () => {
